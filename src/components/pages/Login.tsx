@@ -60,8 +60,8 @@ const Login = () => {
         <ReusableForm
           onSubmit={onSubmit}
           defaultValues={{
-            email: "superadmin123@gmail.com",
-            password: "s12345",
+            email: "superadmin@gmail.com",
+            password: "12345678",
           }}
         >
           <TextInput

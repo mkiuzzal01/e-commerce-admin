@@ -11,9 +11,8 @@ import { IoIosNotifications } from "react-icons/io";
 import { BsChatSquareQuoteFill } from "react-icons/bs";
 import { MdFeedback } from "react-icons/md";
 import { RiGalleryFill } from "react-icons/ri";
-import type { Navigation } from "@toolpad/core/AppProvider";
 
-export const navigation: Navigation = [
+export const navigation = [
   {
     title: "Overview",
     icon: <FaArrowTrendUp size={20} />,
@@ -28,8 +27,8 @@ export const navigation: Navigation = [
     title: "Users",
     icon: <FaUserGroup size={20} />,
     children: [
-      { segment: "create-user", icon: <FaPlus size={20} /> },
-      { segment: "all-users", icon: <FaUserGroup size={20} /> },
+      { segment: "create", icon: <FaPlus size={20} /> },
+      { segment: "All-users", icon: <FaUserGroup size={20} /> },
     ],
   },
   {

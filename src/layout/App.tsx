@@ -15,7 +15,7 @@ import { SearchIcon } from "lucide-react";
 import ProtectedRoute from "../route/protectedRoute";
 import User from "./components/User";
 import Notification from "./components/Notification";
-import { navigation } from "./Navigation";
+import { navigation } from "./navigation";
 
 const theme = createTheme({
   palette: {
@@ -32,7 +32,7 @@ const theme = createTheme({
 });
 
 const branding = {
-  title: "EnterpriseX",
+  title: "Export-corner",
   homeUrl: "/overview",
   logo: "",
 };

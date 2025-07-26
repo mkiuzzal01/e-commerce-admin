@@ -2,7 +2,7 @@ import { createSlice, type PayloadAction} from "@reduxjs/toolkit";
 import type { RootState } from "../../store";
 
 export type TUser = {
-  id: string;
+  slug: string;
   role: string;
   iat: number;
   exp: number;

@@ -25,8 +25,8 @@ const AllUsers = () => {
     sort: "-createdAt",
   });
 
-
   console.log(data);
+
   if (isLoading) return <Loader />;
 
   return (

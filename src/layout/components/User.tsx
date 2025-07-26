@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout, selectCurrentUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../../components/utils/tost-alert/ToastProvider";
 import Loader from "../../shared/Loader";
-import { useSingleUserByIdQuery } from "../../redux/features/user/user-api";
+import { useSingleUserBySlugQuery } from "../../redux/features/user/user-api";
 
 const User = () => {
   const dispatch = useAppDispatch();
@@ -24,11 +24,11 @@ const User = () => {
   const { showToast } = useToast();
 
   const currentUser = useAppSelector(selectCurrentUser);
-  const { data: userInfo, isLoading } = useSingleUserByIdQuery(
-    currentUser?.id ?? ""
+  const { data: userInfo, isLoading } = useSingleUserBySlugQuery(
+    currentUser?.slug ?? ""
   );
 
-  // console.log(userInfo); 
+  console.log(userInfo);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -63,9 +63,11 @@ const User = () => {
 
   const profileImage =
     userInfo?.data?.image || "https://www.gravatar.com/avatar/?d=mp";
-  const name = userInfo?.data?.name || "Guest User";
+  const name =
+    userInfo?.data?.name?.firstName +
+      userInfo?.data?.name?.middleName +
+      userInfo?.data?.name?.lastName || "Guest User";
   const email = userInfo?.data?.email || "guest@example.com";
-
   return (
     <>
       <IconButton
