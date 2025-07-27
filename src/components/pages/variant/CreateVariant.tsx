@@ -4,6 +4,7 @@ import TextInput from "../../utils/input-fields/TextInput";
 import ReusableForm from "../../../shared/ReusableFrom";
 import { useState } from "react";
 import FormHeader from "../../utils/FormHeader";
+import { useCreateVariantMutation } from "../../../redux/features/variant/variant-api";
 
 type AttributeValue = {
   value: string;
@@ -18,6 +19,7 @@ const CreateVariant = () => {
   const [attributes, setAttributes] = useState<AttributeValue[]>([
     { value: "" },
   ]);
+  const [createVariant, { isLoading }] = useCreateVariantMutation();
 
   const removeAttribute = (index: number) => {
     const updated = attributes.filter((_, idx) => idx !== index);
@@ -28,8 +30,10 @@ const CreateVariant = () => {
     setAttributes([...attributes, { value: "" }]);
   };
 
-  const onSubmit = (data: CreateVariantFormValues) => {
-    console.log("Variant Submitted:", data);
+  const onSubmit = async (data: CreateVariantFormValues) => {
+    console.log(data);
+    const res = await createVariant(data);
+    console.log(res);
   };
 
   return (

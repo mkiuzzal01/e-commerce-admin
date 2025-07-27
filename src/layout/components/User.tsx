@@ -28,7 +28,7 @@ const User = () => {
     currentUser?.slug ?? ""
   );
 
-  console.log(userInfo);
+  // console.log(userInfo);
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
@@ -65,7 +65,9 @@ const User = () => {
     userInfo?.data?.image || "https://www.gravatar.com/avatar/?d=mp";
   const name =
     userInfo?.data?.name?.firstName +
+      " " +
       userInfo?.data?.name?.middleName +
+      " " +
       userInfo?.data?.name?.lastName || "Guest User";
   const email = userInfo?.data?.email || "guest@example.com";
   return (

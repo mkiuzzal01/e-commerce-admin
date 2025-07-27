@@ -5,21 +5,21 @@ const variantApi = baseApi.injectEndpoints({
     //create variant:
     createVariant: builder.mutation({
       query: (data) => ({
-        url: "/product-variant/crate-product-variant",
+        url: "/variant/crate-variant",
         method: "POST",
         body: data,
       }),
     }),
     updateVariant: builder.mutation({
       query: (id: string) => ({
-        url: `/product-variant/update-product-variant/${id}`,
+        url: `/variant/update-variant/${id}`,
         method: "PATCH",
         // body: data,
       }),
     }),
     deleteVariant: builder.mutation({
       query: (id: string) => ({
-        url: `/product-variant/delete-single-product-variant/${id}`,
+        url: `/variant/delete-variant/${id}`,
         method: "DELETE",
         // body: data,
       }),
@@ -27,14 +27,14 @@ const variantApi = baseApi.injectEndpoints({
     //get all variant:
     allVariant: builder.query({
       query: () => ({
-        url: "/product-variant/all-product-variant",
+        url: "/variant/all-variant",
         method: "GET",
       }),
     }),
     //get single variant:
     singleVariant: builder.query({
       query: (id: string) => ({
-        url: `/product-variant/get-single-product-variant/${id}`,
+        url: `/variant/single-variant/${id}`,
         method: "GET",
       }),
     }),

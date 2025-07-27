@@ -33,8 +33,8 @@ export const route = createBrowserRouter([
     children: [
       { path: "overview", Component: Overview },
       { path: "profile", Component: Profile },
-      { path: "create-user", Component: CreateUser },
-      { path: "all-users", Component: AllUsers },
+      { path: "create", Component: CreateUser },
+      { path: "users", Component: AllUsers },
       { path: "view-user/:slug", Component: ViewUser },
       { path: "update-user/:slug", Component: UpdateUser },
       { path: "create-product", Component: CreateProduct },

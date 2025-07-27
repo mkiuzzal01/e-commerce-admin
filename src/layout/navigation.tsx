@@ -8,8 +8,7 @@ import {
   FaFolderOpen,
 } from "react-icons/fa6";
 import { IoIosNotifications } from "react-icons/io";
-import { BsChatSquareQuoteFill } from "react-icons/bs";
-import { MdFeedback } from "react-icons/md";
+import { MdCategory, MdFeedback } from "react-icons/md";
 import { RiGalleryFill } from "react-icons/ri";
 
 export const navigation = [
@@ -24,50 +23,45 @@ export const navigation = [
     children: [{ segment: "profile", icon: <FaPerson size={20} /> }],
   },
   {
-    title: "Users",
+    title: "User",
     icon: <FaUserGroup size={20} />,
     children: [
-      { segment: "create", icon: <FaPlus size={20} /> },
-      { segment: "All-users", icon: <FaUserGroup size={20} /> },
+      { segment: "Create", icon: <FaPlus size={20} /> },
+      { segment: "Users", icon: <FaUserGroup size={20} /> },
     ],
   },
   {
-    title: "Products",
+    title: "Category",
+    icon: <MdCategory size={20} />,
+    children: [
+      { segment: "create-category", icon: <FaPlus size={20} /> },
+      { segment: "all-category", icon: <FaList size={20} /> },
+    ],
+  },
+  {
+    title: "Product",
     icon: <FaList size={20} />,
     children: [
       { segment: "create-product", icon: <FaPlus size={20} /> },
       { segment: "all-product", icon: <FaList size={20} /> },
       { segment: "create-variant", icon: <FaPlus size={20} /> },
       { segment: "all-variant", icon: <FaList size={20} /> },
-      { segment: "create-category", icon: <FaPlus size={20} /> },
-      { segment: "all-category", icon: <FaList size={20} /> },
     ],
   },
   {
-    title: "Orders",
+    title: "Order",
     icon: <FaPaypal size={20} />,
-    children: [
-      { segment: "create-order", icon: <FaPlus size={20} /> },
-      { segment: "all-order", icon: <FaList size={20} /> },
-      { segment: "seller-pay", icon: <FaPaypal size={20} /> },
-    ],
+    children: [{ segment: "all-order", icon: <FaList size={20} /> }],
   },
   {
-    title: "Notifications",
+    title: "Advertisement",
     icon: <IoIosNotifications size={20} />,
     children: [
       { segment: "create-notice", icon: <FaPlus size={20} /> },
       { segment: "all-notice", icon: <IoIosNotifications size={20} /> },
     ],
   },
-  {
-    title: "Requisitions",
-    icon: <BsChatSquareQuoteFill size={20} />,
-    children: [
-      { segment: "create-requisition", icon: <FaPlus size={20} /> },
-      { segment: "all-requisition", icon: <BsChatSquareQuoteFill size={20} /> },
-    ],
-  },
+
   {
     title: "Feedback",
     icon: <MdFeedback size={20} />,
