@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { baseApi } from "./api/baseApi";
 import authReducer from "./features/auth/authSlice";
 import selectedIdReducer from "./slices/selectedIdSlice";
+import multipleSelectedIdReducer from "./slices/multipleSelectedIdSlice";
 import {
   persistReducer,
   persistStore,
@@ -27,6 +28,7 @@ export const store = configureStore({
     [baseApi.reducerPath]: baseApi.reducer,
     auth: persistedAuthReducer,
     selectedId: selectedIdReducer,
+    multiSelect: multipleSelectedIdReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

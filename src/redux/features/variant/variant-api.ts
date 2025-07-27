@@ -33,8 +33,8 @@ const variantApi = baseApi.injectEndpoints({
     }),
     //get single variant:
     singleVariant: builder.query({
-      query: (id: string) => ({
-        url: `/variant/single-variant/${id}`,
+      query: (slug: string) => ({
+        url: `/variant/single-variant/${slug}`,
         method: "GET",
       }),
     }),

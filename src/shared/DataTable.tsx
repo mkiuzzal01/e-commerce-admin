@@ -112,7 +112,7 @@ const DataTable: React.FC<TableProps> = ({
             <MenuItem
               onClick={() => {
                 navigate(
-                  `${viewPath}/${params?.row?.slug ?? params?.row?._id}`
+                  `${viewPath}/${params?.row?.slug || params?.row?._id}`
                 );
                 handleMenuClose();
               }}

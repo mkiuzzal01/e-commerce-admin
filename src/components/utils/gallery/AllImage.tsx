@@ -26,13 +26,21 @@ import { useAppDispatch, useAppSelector } from "../../../redux/hooks";
 import { setSelectedId } from "../../../redux/slices/selectedIdSlice";
 
 type PropsType = {
-  setSelectImage?: (_id: string) => void;
-  selectImage?: number;
-  refetch?: () => void;
+  setSelectImage?: (image: TImage) => void;
   imagesData: TImage[];
+  refetch?: () => void;
+  selectionMode?: "single" | "multiple";
+  selectedImages?: string[];
+  onImageSelect?: (image: TImage) => void;
 };
 
-const AllImage = ({ imagesData, refetch }: PropsType) => {
+const AllImage = ({
+  imagesData,
+  refetch,
+  selectionMode = "single",
+  selectedImages = [],
+  setSelectImage,
+}: PropsType) => {
   const theme = useTheme();
   const { pathname } = useLocation();
   const [renameOpen, setRename] = useState(false);
@@ -43,10 +51,10 @@ const AllImage = ({ imagesData, refetch }: PropsType) => {
   const selectedId = useAppSelector((state) => state.selectedId.selectedId);
   const { showToast } = useToast();
 
-  //handle pathname:
+  // Handle pathname
   const path = pathname === "/images";
 
-  //handle update image name
+  // Handle update image name
   const handleEdit = async (value: { photoName: string }) => {
     try {
       const updateData = {
@@ -56,7 +64,7 @@ const AllImage = ({ imagesData, refetch }: PropsType) => {
       const { data } = await update(updateData);
       if (data.success) {
         showToast({
-          message: data.message || "Image rename successfully!",
+          message: data.message || "Image renamed successfully!",
           type: "success",
           duration: 3000,
           position: {
@@ -80,7 +88,7 @@ const AllImage = ({ imagesData, refetch }: PropsType) => {
     }
   };
 
-  //handle delete
+  // Handle delete
   const handleDelete = async (id: string) => {
     try {
       const res = await deleteImage(id);
@@ -109,162 +117,166 @@ const AllImage = ({ imagesData, refetch }: PropsType) => {
     }
   };
 
+  // Handle image selection
+  const handleSelect = (image: TImage) => {
+    if (selectionMode === "single") {
+      if (setSelectImage) {
+        setSelectImage(image);
+      } else {
+        dispatch(setSelectedId(image._id));
+      }
+    }
+  };
+
   return (
     <Box>
-      <Box>
-        {imagesData?.length > 0 ? (
-          <Grid container spacing={2} sx={{ pt: 2 }}>
-            {imagesData.map((item) => {
-              return (
-                <Grid
-                  key={item._id}
-                  size={{
-                    xs: 6,
-                    md: 2,
-                  }}
-                  sx={{ cursor: "pointer" }}
-                >
-                  <Paper
-                    onClick={() => {
-                      if (!path) {
-                        dispatch(setSelectedId(item._id));
-                      }
+      {imagesData?.length > 0 ? (
+        <Grid container spacing={2} sx={{ pt: 2 }}>
+          {imagesData.map((item) => (
+            <Grid
+              key={item._id}
+              size={{ xs: 6, md: 2 }}
+              sx={{ cursor: "pointer" }}
+            >
+              <Paper
+                onClick={() => handleSelect(item)}
+                sx={{
+                  position: "relative",
+                  borderRadius: 2,
+                  height: 100,
+                  width: 100,
+                  overflow: "hidden",
+                  border:
+                    (selectedId === item._id && !path) ||
+                    selectedImages.includes(item._id)
+                      ? "2px solid #0000FF"
+                      : "2px solid transparent",
+                  transition: "0.3s",
+                  "&:hover .overlay": {
+                    opacity: 0.5,
+                  },
+                  "&:hover .image-actions": {
+                    opacity: 1,
+                    visibility: "visible",
+                  },
+                }}
+              >
+                {/* Image */}
+                <Box>
+                  <img
+                    src={item?.photo?.url || "/placeholder.png"}
+                    alt={item?.photoName}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
                     }}
-                    sx={{
-                      position: "relative",
-                      borderRadius: 2,
-                      overflow: "hidden",
-                      border:
-                        selectedId === item._id && !path
-                          ? "2px solid #0000FF"
-                          : "2px solid transparent",
-                      transition: "0.3s",
-                      "&:hover .overlay": {
-                        opacity: 0.5,
-                      },
-                      "&:hover .image-actions": {
-                        opacity: 1,
-                        visibility: "visible",
-                      },
-                    }}
-                  >
-                    {/* Image */}
-                    <Box sx={{ aspectRatio: "1 / 1", overflow: "hidden" }}>
-                      <img
-                        src={item?.photo?.url || "/placeholder.png"}
-                        alt={item?.photoName}
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                        }}
-                      />
-                    </Box>
+                  />
+                </Box>
 
-                    {path && (
-                      <>
-                        <Box
-                          className="overlay"
-                          sx={{
-                            position: "absolute",
-                            top: 0,
-                            left: 0,
-                            width: "100%",
-                            height: "100%",
-                            bgcolor: "#000",
-                            opacity: 0,
-                            transition: "opacity 0.3s ease",
-                            zIndex: 1,
-                          }}
-                        />
-                        <Box
-                          className="image-actions"
-                          sx={{
-                            position: "absolute",
-                            top: 8,
-                            right: 8,
-                            display: "flex",
-                            gap: 1,
-                            opacity: 0,
-                            visibility: "hidden",
-                            zIndex: 2,
-                            transition: "opacity 0.3s ease",
-                          }}
-                        >
-                          <Tooltip title="Rename">
-                            <IconButton
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                setRename(true);
-                                setSelected(item);
-                              }}
-                            >
-                              <DriveFileRenameOutline
-                                sx={{
-                                  fontSize: 22,
-                                  color: theme.palette.grey[100],
-                                }}
-                              />
-                            </IconButton>
-                          </Tooltip>
-
-                          <Tooltip title="Delete">
-                            <IconButton
-                              size="small"
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleDelete(item._id);
-                              }}
-                            >
-                              {isDeleting ? (
-                                <CircularProgress size={20} />
-                              ) : (
-                                <Delete
-                                  sx={{
-                                    fontSize: 22,
-                                    color: theme.palette.error.light,
-                                  }}
-                                />
-                              )}
-                            </IconButton>
-                          </Tooltip>
-                        </Box>
-                      </>
-                    )}
-
-                    {/* Image Name */}
+                {path && (
+                  <>
                     <Box
+                      className="overlay"
                       sx={{
                         position: "absolute",
-                        bottom: 0,
+                        top: 0,
+                        left: 0,
                         width: "100%",
-                        bgcolor: "rgba(0, 0, 0, 0.6)",
-                        px: 1,
-                        py: 0.5,
+                        height: "100%",
+                        bgcolor: "#000",
+                        opacity: 0,
+                        transition: "opacity 0.3s ease",
+                        zIndex: 1,
+                      }}
+                    />
+                    <Box
+                      className="image-actions"
+                      sx={{
+                        position: "absolute",
+                        top: 8,
+                        right: 8,
+                        display: "flex",
+                        gap: 1,
+                        opacity: 0,
+                        visibility: "hidden",
                         zIndex: 2,
+                        transition: "opacity 0.3s ease",
                       }}
                     >
-                      <Tooltip title={item?.photoName}>
-                        <Typography
-                          variant="caption"
-                          color="white"
-                          noWrap
-                          sx={{ fontSize: "0.75rem" }}
+                      <Tooltip title="Rename">
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setRename(true);
+                            setSelected(item);
+                          }}
                         >
-                          {item?.photoName}
-                        </Typography>
+                          <DriveFileRenameOutline
+                            sx={{
+                              fontSize: 22,
+                              color: theme.palette.grey[100],
+                            }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip title="Delete">
+                        <IconButton
+                          size="small"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(item._id);
+                          }}
+                        >
+                          {isDeleting ? (
+                            <CircularProgress size={20} />
+                          ) : (
+                            <Delete
+                              sx={{
+                                fontSize: 22,
+                                color: theme.palette.error.light,
+                              }}
+                            />
+                          )}
+                        </IconButton>
                       </Tooltip>
                     </Box>
-                  </Paper>
-                </Grid>
-              );
-            })}
-          </Grid>
-        ) : (
-          <Empty heading="No images found" refetch={refetch} />
-        )}
-      </Box>
+                  </>
+                )}
+
+                {/* Image Name */}
+                <Box
+                  sx={{
+                    position: "absolute",
+                    bottom: 0,
+                    width: "100%",
+                    bgcolor: "rgba(0, 0, 0, 0.6)",
+                    px: 1,
+                    py: 0.5,
+                    zIndex: 2,
+                  }}
+                >
+                  <Tooltip title={item?.photoName}>
+                    <Typography
+                      variant="caption"
+                      color="white"
+                      noWrap
+                      sx={{ fontSize: "0.75rem" }}
+                    >
+                      {item?.photoName}
+                    </Typography>
+                  </Tooltip>
+                </Box>
+              </Paper>
+            </Grid>
+          ))}
+        </Grid>
+      ) : (
+        <Empty heading="No images found" refetch={refetch} />
+      )}
+
       {/* Edit Modal */}
       <ReusableModal
         open={renameOpen}
