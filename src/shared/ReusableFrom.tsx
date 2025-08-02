@@ -1,51 +1,24 @@
-import type { ReactNode } from "react";
-import {
-  FormProvider,
-  useForm,
-  type FieldValues,
-  type SubmitHandler,
-} from "react-hook-form";
-
-type TFormConfig = {
-  defaultValues?: Record<string, any>;
-  resolver?: any;
-};
-
-type TFormProps = {
-  onSubmit: SubmitHandler<FieldValues | any>;
-  children: ReactNode;
-} & TFormConfig;
+import { FormProvider, useForm } from "react-hook-form";
 
 const ReusableForm = ({
-  onSubmit,
   children,
-  defaultValues,
+  onSubmit,
   resolver,
-}: TFormProps) => {
-  const formConfig: TFormConfig = {};
-
-  if (defaultValues) {
-    formConfig["defaultValues"] = defaultValues;
-  }
-
-  if (resolver) {
-    formConfig["resolver"] = resolver;
-  }
-
-  const methods = useForm(formConfig);
-
-  const submit: SubmitHandler<FieldValues> = async (data) => {
-    try {
-      await onSubmit(data);
-      // methods.reset();
-    } catch (error) {
-      console.error(error);
-    }
-  };
+  defaultValues,
+}: {
+  children: React.ReactNode;
+  onSubmit: (values: any) => void;
+  resolver?: any;
+  defaultValues?: any;
+}) => {
+  const methods = useForm({
+    resolver,
+    defaultValues,
+  });
 
   return (
-    <FormProvider {...methods} setError={methods.setError}>
-      <form onSubmit={methods.handleSubmit(submit)} className="space-y-4">
+    <FormProvider {...methods}>
+      <form onSubmit={methods.handleSubmit(onSubmit)}>
         {children}
       </form>
     </FormProvider>

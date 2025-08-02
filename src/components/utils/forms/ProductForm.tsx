@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Box, Button, Grid, Paper, Chip } from "@mui/material";
+import {
+  Box,
+  Button,
+  Grid,
+  Paper,
+  Chip,
+  CircularProgress,
+} from "@mui/material";
 import {
   Category as CategoryIcon,
   InfoOutlined as InfoOutlinedIcon,
@@ -45,10 +52,9 @@ const activityOptions = [
   "discontinued",
 ];
 type Pros = {
-  id?: string;
   initialData?: FieldValues;
 };
-const ProductForm = ({ id, initialData }: Pros) => {
+const ProductForm = ({ initialData }: Pros) => {
   const pathname = useNavigate();
   const { showToast } = useToast();
   const [mainImageDrawerOpen, setMainImageDrawerOpen] = useState(false);
@@ -65,7 +71,7 @@ const ProductForm = ({ id, initialData }: Pros) => {
   );
   const { data: mainCategoryData } = useAllMainCategoryQuery({});
   const { data: variantData } = useAllVariantQuery({});
-  const [createProduct, { isLoading }] = useCreateProductMutation();
+  const [createProduct, { isLoading: isCreating }] = useCreateProductMutation();
   const [updateProduct, { isLoading: isUpdateLoading }] =
     useUpdateProductMutation();
 
@@ -118,7 +124,8 @@ const ProductForm = ({ id, initialData }: Pros) => {
       };
 
       if (initialData?._id) {
-        const { data } = await updateProduct(initialData._id, formData);
+        console.log(initialData?._id);
+        const { data } = await updateProduct({ id: initialData._id, ...formData });
         if (data?.success) {
           showToast({
             message: "Product updated successfully",
@@ -165,13 +172,12 @@ const ProductForm = ({ id, initialData }: Pros) => {
 
         <ReusableForm
           onSubmit={onSubmit}
-          resolver={zodResolver(baseProductSchema)}
           defaultValues={{
             ...initialData,
             variants: initialData?.variants || [],
-            mainCategory: initialData?.categories?.mainCategory?.name,
-            category: initialData?.categories?.category?.name,
-            subCategory: initialData?.categories?.subCategory?.name,
+            mainCategory: initialData?.categories?.mainCategory?._id,
+            category: initialData?.categories?.category?._id,
+            subCategory: initialData?.categories?.subCategory?._id,
             status: initialData?.status || "",
             activity: initialData?.activity || "",
             price: initialData?.price || 0,
@@ -475,9 +481,16 @@ const ProductForm = ({ id, initialData }: Pros) => {
                 variant="contained"
                 color="primary"
                 size="large"
-                startIcon={<SaveIcon />}
+                startIcon={
+                  isCreating || isUpdateLoading ? (
+                    <CircularProgress size={20} color="inherit" />
+                  ) : (
+                    <SaveIcon />
+                  )
+                }
+                disabled={isCreating || isUpdateLoading}
               >
-                Create Product
+                {initialData ? "Update Product" : "Create Product"}
               </Button>
             </Box>
           </Box>

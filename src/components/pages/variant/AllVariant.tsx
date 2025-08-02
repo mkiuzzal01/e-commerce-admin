@@ -17,8 +17,6 @@ const AllVariant = () => {
   const [deleteVariant] = useDeleteVariantMutation();
   const { showToast } = useToast();
 
-  console.log(data);
-
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
       title: "Delete Variant?",

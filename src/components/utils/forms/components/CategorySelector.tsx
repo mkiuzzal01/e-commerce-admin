@@ -1,5 +1,5 @@
+import { useEffect, useMemo, useRef } from "react";
 import { Grid } from "@mui/material";
-import { useEffect } from "react";
 import { useFormContext, useWatch } from "react-hook-form";
 import AutocompleteInput from "../../../utils/input-fields/AutocompleteInput";
 
@@ -15,25 +15,51 @@ export const CategorySelector = ({
     name: "mainCategory",
   });
 
-  const selectedMainCategory = mainCategoryData?.data?.result?.find(
-    (mainCat: any) => mainCat._id === selectedMainCategoryId
-  );
+  // track first render to prevent clearing on load
+  const isFirstRender = useRef(true);
 
-  const categoryOptions =
-    selectedMainCategory?.category?.map((c: any) => ({
-      label: c.name,
-      value: c._id,
-    })) || [];
+  const selectedMainCategory = useMemo(() => {
+    return mainCategoryData?.data?.result?.find(
+      (mainCat: any) => mainCat._id === selectedMainCategoryId
+    );
+  }, [mainCategoryData, selectedMainCategoryId]);
 
-  const subCategoryOptions =
-    selectedMainCategory?.subCategory?.map((sc: any) => ({
-      label: sc.name,
-      value: sc._id,
-    })) || [];
+  const categoryOptions = useMemo(() => {
+    return (
+      selectedMainCategory?.category?.map((c: any) => ({
+        label: c.name,
+        value: c._id,
+      })) || []
+    );
+  }, [selectedMainCategory]);
+
+  const subCategoryOptions = useMemo(() => {
+    return (
+      selectedMainCategory?.subCategory?.map((sc: any) => ({
+        label: sc.name,
+        value: sc._id,
+      })) || []
+    );
+  }, [selectedMainCategory]);
+
+  const previousMainCategoryRef = useRef<string | null>(null);
 
   useEffect(() => {
-    setValue("category", "");
-    setValue("subCategory", "");
+    if (isFirstRender.current) {
+      previousMainCategoryRef.current = selectedMainCategoryId;
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (
+      previousMainCategoryRef.current &&
+      previousMainCategoryRef.current !== selectedMainCategoryId
+    ) {
+      setValue("category", "");
+      setValue("subCategory", "");
+    }
+
+    previousMainCategoryRef.current = selectedMainCategoryId;
   }, [selectedMainCategoryId, setValue]);
 
   return (

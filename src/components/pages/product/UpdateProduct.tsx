@@ -12,7 +12,7 @@ export default function UpdateProduct() {
 
   return (
     <Box>
-      <ProductForm id={data?.data?.id} initialData={data?.data} />
+      <ProductForm initialData={data?.data} />
     </Box>
   );
 }
