@@ -13,7 +13,7 @@ type TextInputProps = {
   defaultValue?: string;
   fullWidth?: boolean;
   multiline?: boolean;
-  row?: number;
+  rows?: number;
 };
 
 const TextInput = ({
@@ -26,7 +26,7 @@ const TextInput = ({
   defaultValue = "",
   fullWidth = true,
   multiline,
-  row = 1,
+  rows = 1,
 }: TextInputProps) => {
   const { control } = useFormContext();
   const [showPassword, setShowPassword] = useState(false);
@@ -50,7 +50,7 @@ const TextInput = ({
           helperText={fieldState.error ? `${label} is required` : ""}
           type={isPassword ? (showPassword ? "text" : "password") : type}
           multiline={multiline}
-          rows={multiline ? row : undefined}
+          rows={multiline ? rows : undefined}
           InputProps={{
             endAdornment: isPassword && (
               <InputAdornment position="end">

@@ -1,3 +1,4 @@
+import React from "react";
 import { Add, Delete } from "@mui/icons-material";
 import {
   Box,
@@ -8,175 +9,264 @@ import {
   Grid,
   IconButton,
   Stack,
+  Typography,
 } from "@mui/material";
-import { useEffect } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useWatch } from "react-hook-form";
 import TextInput from "./input-fields/TextInput";
+import AutocompleteInput from "./input-fields/AutocompleteInput";
+import { nanoid } from "nanoid";
 
-type Attribute = {
+interface Attribute {
+  id: string;
   value: string;
   quantity: number;
-};
+}
 
-type Variant = {
+interface Variant {
+  id: string;
   name: string;
   attributes: Attribute[];
-};
+}
 
-type VariantsSectionProps = {
-  variants: Variant[];
-  setVariants: React.Dispatch<React.SetStateAction<Variant[]>>;
-};
+interface Option {
+  label: string;
+  value: string;
+}
 
-const VariantsSection = ({ variants, setVariants }: VariantsSectionProps) => {
-  const { setValue } = useFormContext();
+interface VariantsSectionProps {
+  variantNameOptions?: Option[];
+  attributeOptions?: Record<string, Option[]>;
+}
 
-  useEffect(() => {
-    setValue("variantsData", JSON.stringify(variants));
-  }, [variants, setValue]);
+const VariantsSection: React.FC<VariantsSectionProps> = ({
+  variantNameOptions = [],
+  attributeOptions = {},
+}) => {
+  const { control, setValue, getValues } = useFormContext();
 
+  // Get current variants from form
+  const variants: Variant[] = useWatch({
+    control,
+    name: "variants",
+    defaultValue: [
+      {
+        id: nanoid(),
+        name: "",
+        attributes: [{ id: nanoid(), value: "", quantity: 0 }],
+      },
+    ],
+  });
+
+  // Create empty variant
+  const createEmptyVariant = (): Variant => ({
+    id: nanoid(),
+    name: "",
+    attributes: [{ id: nanoid(), value: "", quantity: 0 }],
+  });
+
+  // Create empty attribute
+  const createEmptyAttribute = (): Attribute => ({
+    id: nanoid(),
+    value: "",
+    quantity: 0,
+  });
+
+  // Add variant
   const addVariant = () => {
-    setVariants([
-      ...variants,
-      { name: "", attributes: [{ value: "", quantity: 0 }] },
-    ]);
+    const currentVariants = getValues("variants") || [];
+    setValue("variants", [...currentVariants, createEmptyVariant()]);
   };
 
-  const removeVariant = (variantIndex: number) => {
-    const newVariants = variants.filter((_, index) => index !== variantIndex);
-    setVariants(
-      newVariants.length
-        ? newVariants
-        : [{ name: "", attributes: [{ value: "", quantity: 0 }] }]
+  // Remove variant
+  const removeVariant = (variantId: string) => {
+    const currentVariants = getValues("variants") || [];
+    const filtered = currentVariants.filter((v: Variant) => v.id !== variantId);
+    setValue(
+      "variants",
+      filtered.length > 0 ? filtered : [createEmptyVariant()]
     );
   };
 
-  const addAttribute = (variantIndex: number) => {
-    const newVariants = [...variants];
-    newVariants[variantIndex].attributes.push({ value: "", quantity: 0 });
-    setVariants(newVariants);
+  // Add attribute
+  const addAttribute = (variantId: string) => {
+    const currentVariants = getValues("variants") || [];
+    setValue(
+      "variants",
+      currentVariants.map((variant: Variant) =>
+        variant.id === variantId
+          ? {
+              ...variant,
+              attributes: [...variant.attributes, createEmptyAttribute()],
+            }
+          : variant
+      )
+    );
   };
 
-  const removeAttribute = (variantIndex: number, attributeIndex: number) => {
-    const newVariants = [...variants];
-    if (newVariants[variantIndex].attributes.length > 1) {
-      newVariants[variantIndex].attributes = newVariants[
-        variantIndex
-      ].attributes.filter((_, index) => index !== attributeIndex);
-      setVariants(newVariants);
-    }
+  // Remove attribute
+  const removeAttribute = (variantId: string, attributeId: string) => {
+    const currentVariants = getValues("variants") || [];
+    setValue(
+      "variants",
+      currentVariants.map((variant: Variant) =>
+        variant.id === variantId && variant.attributes.length > 1
+          ? {
+              ...variant,
+              attributes: variant.attributes.filter(
+                (attr) => attr.id !== attributeId
+              ),
+            }
+          : variant
+      )
+    );
+  };
+
+  // Get attribute options for current variant name
+  const getAttributeOptions = (variantIndex: number): Option[] => {
+    const variantName = variants[variantIndex]?.name?.toLowerCase?.() || "";
+    return Array.isArray(attributeOptions[variantName])
+      ? attributeOptions[variantName]
+      : [];
   };
 
   return (
-    <Box className="mb-8">
-      {variants.map((variant, variantIndex) => (
-        <Card
-          key={`variant-${variantIndex}`}
-          variant="outlined"
-          className="mb-4"
-          sx={{ borderColor: "rgba(0, 0, 0, 0.1)" }}
-        >
-          <CardContent>
-            <Box className="flex justify-between items-center mb-4">
-              <Stack direction="row" spacing={1} alignItems="center">
-                <Chip
-                  label={`Variant ${variantIndex + 1}`}
-                  color="primary"
-                  size="small"
-                  variant="outlined"
-                />
-              </Stack>
-              <Box>
-                {
-                  variants.length > 1 &&
-                  <IconButton
-                  color="error"
-                  onClick={() => removeVariant(variantIndex)}
-                  disabled={variants.length === 1}
-                  size="small"
-                >
-                  <Delete />
-                </IconButton>
-                }
-                <Button
-                  startIcon={<Add />}
-                  onClick={addVariant}
-                  variant="outlined"
-                  color="primary"
-                  className="mt-4"
-                >
-                  Add Variant
-                </Button>
-              </Box>
-            </Box>
+    <Box sx={{ mb: 4 }}>
+      {variants.map((variant, variantIndex) => {
+        const dynamicAttributeOptions = getAttributeOptions(variantIndex);
+        const canRemoveVariant = variants.length > 1;
+        const canRemoveAttribute = variant.attributes.length > 1;
 
-            <Grid container spacing={3}>
-              <Grid size={{xs:12,md:6}}>
-                <TextInput
-                  name={`variants.${variantIndex}.name`}
-                  label="Variant Type"
-                  placeholder="e.g. Color, Size, Material, etc."
-                  required
-                />
-              </Grid>
-
-              <Grid size={{xs:12,md:6}}>
-                {variant.attributes.map((attribute, attributeIndex) => (
-                  <Grid
-                    container
-                    spacing={2}
-                    key={`attribute-${variantIndex}-${attributeIndex}`}
-                    alignItems="center"
-                    className="mb-3"
-                  >
-                    <Grid size={{xs:12,md:5}}>
-                      <TextInput
-                        name={`variants.${variantIndex}.attributes.${attributeIndex}.value`}
-                        label="Option Value"
-                        placeholder="e.g. Red, Small, Cotton, etc."
-                        required
-                      />
-                    </Grid>
-                    <Grid size={{xs:12,md:5}}>
-                      <TextInput
-                        name={`variants.${variantIndex}.attributes.${attributeIndex}.quantity`}
-                        label="Stock"
-                        type="number"
-                        placeholder="0"
-                        required
-                      />
-                    </Grid>
-                    <Grid size={{xs:12,md:2}}>
-                      {attributeIndex > 0 && (
-                        <IconButton
-                          color="error"
-                          onClick={() =>
-                            removeAttribute(variantIndex, attributeIndex)
-                          }
-                          size="small"
-                        >
-                          <Delete fontSize="small" />
-                        </IconButton>
-                      )}
-                    </Grid>
-                  </Grid>
-                ))}
-                <Box className="mt-2">
-                  <Button
-                    startIcon={<Add />}
-                    onClick={() => addAttribute(variantIndex)}
-                    variant="outlined"
+        return (
+          <Card
+            key={variant.id}
+            sx={{
+              mb: 3,
+              borderColor: "divider",
+              "&:hover": { borderColor: "primary.main" },
+            }}
+          >
+            <CardContent>
+              {/* Header */}
+              <Box
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  mb: 3,
+                }}
+              >
+                <Stack direction="row" spacing={1} alignItems="center">
+                  <Chip
+                    label={`Variant ${variantIndex + 1}`}
                     color="primary"
                     size="small"
+                    variant="outlined"
+                  />
+                  {variant.name && (
+                    <Typography variant="body2" color="text.secondary">
+                      {variant.name}
+                    </Typography>
+                  )}
+                </Stack>
+
+                <Stack direction="row" spacing={1}>
+                  {canRemoveVariant && (
+                    <IconButton
+                      color="error"
+                      onClick={() => removeVariant(variant.id)}
+                      size="small"
+                      aria-label={`Remove variant ${variantIndex + 1}`}
+                    >
+                      <Delete />
+                    </IconButton>
+                  )}
+
+                  <Button
+                    startIcon={<Add />}
+                    onClick={addVariant}
+                    variant="outlined"
+                    size="small"
+                    color="primary"
                   >
-                    Add Option
+                    Add Variant
                   </Button>
-                </Box>
+                </Stack>
+              </Box>
+
+              <Grid container spacing={3}>
+                {/* Variant Name */}
+                <Grid size={{ xs: 12, md: 4 }}>
+                  <AutocompleteInput
+                    name={`variants[${variantIndex}].name`}
+                    label="Variant Type"
+                    placeholder="e.g., Color, Size"
+                    required
+                    options={variantNameOptions}
+                  />
+                </Grid>
+
+                {/* Attributes */}
+                <Grid size={{ xs: 12, md: 8 }}>
+                  <Box>
+                    {variant.attributes.map((attribute, attributeIndex) => (
+                      <Grid
+                        container
+                        spacing={2}
+                        key={attribute.id}
+                        alignItems="center"
+                        sx={{ mb: 2 }}
+                      >
+                        <Grid size={{ xs: 12, md: 5 }}>
+                          <AutocompleteInput
+                            name={`variants[${variantIndex}].attributes[${attributeIndex}].value`}
+                            label="Option Value"
+                            placeholder="e.g., Red, Large"
+                            required
+                            options={dynamicAttributeOptions}
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 5 }}>
+                          <TextInput
+                            name={`variants[${variantIndex}].attributes[${attributeIndex}].quantity`}
+                            label="Stock Quantity"
+                            type="number"
+                            placeholder="0"
+                            required
+                          />
+                        </Grid>
+                        <Grid size={{ xs: 12, md: 2 }}>
+                          {canRemoveAttribute && (
+                            <IconButton
+                              color="error"
+                              onClick={() =>
+                                removeAttribute(variant.id, attribute.id)
+                              }
+                              size="small"
+                              aria-label={`Remove option ${attributeIndex + 1}`}
+                            >
+                              <Delete fontSize="small" />
+                            </IconButton>
+                          )}
+                        </Grid>
+                      </Grid>
+                    ))}
+
+                    <Button
+                      startIcon={<Add />}
+                      onClick={() => addAttribute(variant.id)}
+                      variant="outlined"
+                      size="small"
+                      color="primary"
+                    >
+                      Add Option
+                    </Button>
+                  </Box>
+                </Grid>
               </Grid>
-            </Grid>
-          </CardContent>
-        </Card>
-      ))}
+            </CardContent>
+          </Card>
+        );
+      })}
     </Box>
   );
 };

@@ -7,7 +7,6 @@ type ReusableModalProps = {
   onClose: () => void;
   title?: string;
   children: React.ReactNode;
-  width?: number | string;
 };
 
 const ReusableModal: React.FC<ReusableModalProps> = ({
@@ -15,7 +14,6 @@ const ReusableModal: React.FC<ReusableModalProps> = ({
   onClose,
   title,
   children,
-  width = 400,
 }) => {
   return (
     <Modal
@@ -30,15 +28,18 @@ const ReusableModal: React.FC<ReusableModalProps> = ({
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width,
+          width: {
+            xs: 300,
+            md: 500,
+          },
           bgcolor: "background.paper",
           borderRadius: 2,
           boxShadow: 24,
-          p: 3,
+          p: 1,
         }}
       >
         {/* Header */}
-        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 2 }}>
+        <Box sx={{ display: "flex", justifyContent: "space-between", mb: 1 }}>
           {title && (
             <Typography variant="h6" id="reusable-modal-title">
               {title}

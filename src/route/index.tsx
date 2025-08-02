@@ -24,9 +24,14 @@ import ViewUser from "../components/pages/users/ViewUser";
 import UpdateUser from "../components/pages/users/UpdateUser";
 import ViewAttributes from "../components/pages/variant/ViewAttributes";
 import UpdateVariant from "../components/pages/variant/UpdateVariant";
-import CreateProduct from "../components/pages/product/createProduct";
-import AllProduct from "../components/pages/product/allProduct";
 import CreateOrder from "../components/pages/order/createOrder";
+import UpdateCategory from "../components/pages/category/UpdateCategory";
+import UpdateSubCategory from "../components/pages/category/UpdateSubCategory";
+import UpdateMainCategory from "../components/pages/category/UpdateMainCategory";
+import ViewCategories from "../components/pages/category/ViewCategories";
+import UpdateProduct from "../components/pages/product/UpdateProduct";
+import AllProduct from "../components/pages/product/allProduct";
+import CreateProduct from "../components/pages/product/createProduct";
 
 export const route = createBrowserRouter([
   {
@@ -41,11 +46,16 @@ export const route = createBrowserRouter([
       { path: "update-user/:slug", Component: UpdateUser },
       { path: "create-product", Component: CreateProduct },
       { path: "all-product", Component: AllProduct },
+      { path: "update-product/:slug", Component: UpdateProduct },
       { path: "create-variant", Component: CreateVariant },
       { path: "all-variant", Component: AllVariant },
       { path: "update-variant/:slug", Component: UpdateVariant },
       { path: "view-attributes/:slug", Component: ViewAttributes },
       { path: "create-category", Component: CreateCategory },
+      { path: "update-sub-category/:slug", Component: UpdateSubCategory },
+      { path: "update-category/:slug", Component: UpdateCategory },
+      { path: "update-main-category/:slug", Component: UpdateMainCategory },
+      { path: "view-categories/:slug", Component: ViewCategories },
       { path: "all-category", Component: AllCategory },
       { path: "create-order", Component: CreateOrder },
       { path: "all-order", Component: AllOrder },

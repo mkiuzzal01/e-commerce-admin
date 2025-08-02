@@ -1,31 +1,51 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-import React from "react";
+import type { ReactNode } from "react";
 import {
   FormProvider,
   useForm,
-  type UseFormReturn,
+  type FieldValues,
   type SubmitHandler,
 } from "react-hook-form";
 
-type FormProps = {
-  children: React.ReactNode;
-  onSubmit?: SubmitHandler<any>;
+type TFormConfig = {
   defaultValues?: Record<string, any>;
-  methods?: UseFormReturn<any>;
+  resolver?: any;
 };
 
+type TFormProps = {
+  onSubmit: SubmitHandler<FieldValues | any>;
+  children: ReactNode;
+} & TFormConfig;
+
 const ReusableForm = ({
-  children,
   onSubmit,
+  children,
   defaultValues,
-  methods,
-}: FormProps) => {
-  const internalMethods = useForm({ defaultValues });
-  const formMethods = methods ?? internalMethods;
+  resolver,
+}: TFormProps) => {
+  const formConfig: TFormConfig = {};
+
+  if (defaultValues) {
+    formConfig["defaultValues"] = defaultValues;
+  }
+
+  if (resolver) {
+    formConfig["resolver"] = resolver;
+  }
+
+  const methods = useForm(formConfig);
+
+  const submit: SubmitHandler<FieldValues> = async (data) => {
+    try {
+      await onSubmit(data);
+      // methods.reset();
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
-    <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(onSubmit ?? (() => {}))}>
+    <FormProvider {...methods} setError={methods.setError}>
+      <form onSubmit={methods.handleSubmit(submit)} className="space-y-4">
         {children}
       </form>
     </FormProvider>

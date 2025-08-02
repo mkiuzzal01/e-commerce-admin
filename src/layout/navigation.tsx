@@ -1,3 +1,4 @@
+import { Text } from "lucide-react";
 import {
   FaArrowTrendUp,
   FaList,
@@ -61,12 +62,19 @@ export const navigation = [
       { segment: "all-notice", icon: <IoIosNotifications size={20} /> },
     ],
   },
+  {
+    title: "Banner content",
+    icon: <Text size={20} />,
+    children: [
+      { segment: "create-content", icon: <FaPlus size={20} /> },
+      { segment: "all-content", icon: <IoIosNotifications size={20} /> },
+    ],
+  },
 
   {
-    title: "Feedback",
+    title: "Client Feedback",
     icon: <MdFeedback size={20} />,
     children: [
-      { segment: "create-feedback", icon: <FaPlus size={20} /> },
       { segment: "all-feedback", icon: <MdFeedback size={20} /> },
     ],
   },
