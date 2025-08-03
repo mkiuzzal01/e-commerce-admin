@@ -8,7 +8,6 @@ import AllVariant from "../components/pages/variant/AllVariant";
 import CreateCategory from "../components/pages/category/CreateCategory";
 import AllCategory from "../components/pages/category/AllCategory";
 import AllOrder from "../components/pages/order/AllOrder";
-import AllSellerPay from "../components/pages/seller-pay/AllSellerPay";
 import AllFeedback from "../components/pages/feedback/AllFeedback";
 import Images from "../components/gallery/Images";
 import Login from "../components/pages/Login";
@@ -19,7 +18,6 @@ import ViewUser from "../components/pages/users/ViewUser";
 import UpdateUser from "../components/pages/users/UpdateUser";
 import ViewAttributes from "../components/pages/variant/ViewAttributes";
 import UpdateVariant from "../components/pages/variant/UpdateVariant";
-import CreateOrder from "../components/pages/order/createOrder";
 import UpdateCategory from "../components/pages/category/UpdateCategory";
 import UpdateSubCategory from "../components/pages/category/UpdateSubCategory";
 import UpdateMainCategory from "../components/pages/category/UpdateMainCategory";
@@ -30,6 +28,9 @@ import CreateProduct from "../components/pages/product/CreateProduct";
 import CreateAdvertisement from "../components/pages/advertisement/CreateAdvertisement";
 import AllAdvertisement from "../components/pages/advertisement/AllAdvertisement";
 import UpdateAdvertisement from "../components/pages/advertisement/UpdateAdvertisement";
+import CreateBannerContent from "../components/pages/banner-content/CreateBannerContent";
+import AllBannerContent from "../components/pages/banner-content/AllBannerContent";
+import UpdateBannerContent from "../components/pages/banner-content/UpdateBannerContent";
 export const route = createBrowserRouter([
   {
     Component: App,
@@ -54,12 +55,13 @@ export const route = createBrowserRouter([
       { path: "update-main-category/:slug", Component: UpdateMainCategory },
       { path: "view-categories/:slug", Component: ViewCategories },
       { path: "all-category", Component: AllCategory },
-      { path: "create-order", Component: CreateOrder },
       { path: "all-order", Component: AllOrder },
-      { path: "seller-pay", Component: AllSellerPay },
       { path: "create-advertisement", Component: CreateAdvertisement },
       { path: "all-advertisement", Component: AllAdvertisement },
       { path: "update-advertisement/:slug", Component: UpdateAdvertisement },
+      { path: "create-content", Component: CreateBannerContent },
+      { path: "all-content", Component: AllBannerContent },
+      { path: "update-content/:slug", Component: UpdateBannerContent },
       { path: "all-feedback", Component: AllFeedback },
       { path: "images", Component: Images },
       { path: "folders", Component: Folder },
