@@ -58,8 +58,8 @@ export const navigation = [
     title: "Advertisement",
     icon: <IoIosNotifications size={20} />,
     children: [
-      { segment: "create-notice", icon: <FaPlus size={20} /> },
-      { segment: "all-notice", icon: <IoIosNotifications size={20} /> },
+      { segment: "create-advertisement", icon: <FaPlus size={20} /> },
+      { segment: "all-advertisement", icon: <IoIosNotifications size={20} /> },
     ],
   },
   {

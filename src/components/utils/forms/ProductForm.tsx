@@ -39,8 +39,8 @@ import {
 import type { SelectedImage } from "../../../types/TProduct";
 import { useNavigate } from "react-router-dom";
 import { CategorySelector } from "./components/CategorySelector";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { baseProductSchema } from "./components/productValidationSchema";
+// import { zodResolver } from "@hookform/resolvers/zod";
+// import { baseProductSchema } from "./components/productValidationSchema";
 import { useToast } from "../tost-alert/ToastProvider";
 
 const statusOptions = ["in-stock", "out-stock", "low-stock", "pre-order"];
@@ -124,23 +124,24 @@ const ProductForm = ({ initialData }: Pros) => {
       };
 
       if (initialData?._id) {
-        console.log(initialData?._id);
-        const { data } = await updateProduct({ id: initialData._id, ...formData });
-        if (data?.success) {
+        const res = await updateProduct({
+          id: initialData._id,
+          ...formData,
+        });
+        if (res?.success) {
           showToast({
             message: "Product updated successfully",
             type: "success",
           });
-          return pathname("/all-product");
         }
       }
 
-      const { data } = await createProduct(formData);
-      if (data?.success) {
+      const res = await createProduct(formData);
+      if (res?.success) {
         showToast({ message: "Product created successfully", type: "success" });
-        return pathname("/all-product");
       }
 
+      pathname("/all-product");
       showToast({ message: "Something went wrong", type: "error" });
     } catch {
       showToast({

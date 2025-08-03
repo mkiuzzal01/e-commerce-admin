@@ -1,7 +1,5 @@
 import { createBrowserRouter } from "react-router-dom";
 import Overview from "../components/pages/overview/Overview";
-import Notification from "../components/pages/notification/Notification";
-import CreateNotification from "../components/pages/notification/CreateNotification";
 import Profile from "../components/pages/profile/Profile";
 import CreateUser from "../components/pages/users/CreateUser";
 import AllUsers from "../components/pages/users/AllUsers";
@@ -11,10 +9,7 @@ import CreateCategory from "../components/pages/category/CreateCategory";
 import AllCategory from "../components/pages/category/AllCategory";
 import AllOrder from "../components/pages/order/AllOrder";
 import AllSellerPay from "../components/pages/seller-pay/AllSellerPay";
-import CreateRequisition from "../components/pages/requisition/CreateRequisition";
-import Requisition from "../components/pages/requisition/Requisition";
 import AllFeedback from "../components/pages/feedback/AllFeedback";
-import CreateFeedback from "../components/pages/feedback/CreateFeedback";
 import Images from "../components/gallery/Images";
 import Login from "../components/pages/Login";
 import App from "../layout/App";
@@ -30,9 +25,11 @@ import UpdateSubCategory from "../components/pages/category/UpdateSubCategory";
 import UpdateMainCategory from "../components/pages/category/UpdateMainCategory";
 import ViewCategories from "../components/pages/category/ViewCategories";
 import UpdateProduct from "../components/pages/product/UpdateProduct";
-import AllProduct from "../components/pages/product/allProduct";
-import CreateProduct from "../components/pages/product/createProduct";
-
+import AllProduct from "../components/pages/product/AllProduct";
+import CreateProduct from "../components/pages/product/CreateProduct";
+import CreateAdvertisement from "../components/pages/advertisement/CreateAdvertisement";
+import AllAdvertisement from "../components/pages/advertisement/AllAdvertisement";
+import UpdateAdvertisement from "../components/pages/advertisement/UpdateAdvertisement";
 export const route = createBrowserRouter([
   {
     Component: App,
@@ -60,11 +57,9 @@ export const route = createBrowserRouter([
       { path: "create-order", Component: CreateOrder },
       { path: "all-order", Component: AllOrder },
       { path: "seller-pay", Component: AllSellerPay },
-      { path: "create-notice", Component: CreateNotification },
-      { path: "all-notice", Component: Notification },
-      { path: "create-requisition", Component: CreateRequisition },
-      { path: "all-requisition", Component: Requisition },
-      { path: "create-feedback", Component: CreateFeedback },
+      { path: "create-advertisement", Component: CreateAdvertisement },
+      { path: "all-advertisement", Component: AllAdvertisement },
+      { path: "update-advertisement/:slug", Component: UpdateAdvertisement },
       { path: "all-feedback", Component: AllFeedback },
       { path: "images", Component: Images },
       { path: "folders", Component: Folder },

@@ -11,17 +11,16 @@ const variantApi = baseApi.injectEndpoints({
       }),
     }),
     updateVariant: builder.mutation({
-      query: (id: string) => ({
+      query: ({ id, ...data }) => ({
         url: `/variant/update-variant/${id}`,
         method: "PATCH",
-        // body: data,
+        body: data,
       }),
     }),
     deleteVariant: builder.mutation({
       query: (id: string) => ({
         url: `/variant/delete-variant/${id}`,
         method: "DELETE",
-        // body: data,
       }),
     }),
     //get all variant:

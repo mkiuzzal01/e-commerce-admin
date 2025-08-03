@@ -1,39 +1,38 @@
 import { useState } from "react";
 import Loader from "../../../shared/Loader";
 import { Box } from "@mui/material";
-import {
-  useAllProductsQuery,
-  useDeleteProductMutation,
-} from "../../../redux/features/product/product.api";
 import DataTable from "../../../shared/DataTable";
-import { UserColumn } from "./components/Column";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import { showAlert } from "../../utils/tost-alert/showAlert";
+import { advertisementColumn } from "./components/advertisementColumn";
+import {
+  useDeleteAdvertisementMutation,
+  useGetAllAdvertisementsQuery,
+} from "../../../redux/features/advertisement/advertisement.api";
 
-const AllProduct = () => {
+const AllAdvertisement = () => {
   const { showToast } = useToast();
-  const [deleteProduct] = useDeleteProductMutation();
   const [searchTerm, setSearchTerm] = useState("");
   const [status, setStatus] = useState("active");
   const [page, setPage] = useState(1);
   const [limit, setLimit] = useState(10);
 
-  const { data, isLoading, refetch } = useAllProductsQuery({
-    searchTerm
+  const [deleteProduct] = useDeleteAdvertisementMutation();
+  const { data, isLoading, refetch } = useGetAllAdvertisementsQuery({
+    searchTerm,
   });
 
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
-      title: "Delete Product?",
-      text: "This action cannot be undone.",
+      title: "Delete Advertisement",
+      text: "Are you sure you want to delete this advertisement?",
       icon: "warning",
       confirmButtonText: "Yes, delete it!",
-      successText: "Product has been deleted successfully.",
+      successText: "Advertisement has been deleted successfully.",
     });
 
     if (!confirmed) return;
     try {
-      console.log(id);
       await deleteProduct(id).unwrap();
       refetch();
     } catch {
@@ -54,12 +53,12 @@ const AllProduct = () => {
   return (
     <Box p={3}>
       <DataTable
-        title="All Product"
+        title="All Advertisement"
         rows={data?.data?.result || []}
-        columns={UserColumn}
+        columns={advertisementColumn}
         meta={data?.meta}
-        updatePath="/update-product"
-        createPath="/create-product"
+        updatePath="/update-advertisement"
+        createPath="/create-advertisement"
         onDelete={handleDelete}
         search={searchTerm}
         setSearch={setSearchTerm}
@@ -74,4 +73,4 @@ const AllProduct = () => {
   );
 };
 
-export default AllProduct;
+export default AllAdvertisement;

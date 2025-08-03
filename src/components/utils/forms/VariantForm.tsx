@@ -16,11 +16,11 @@ type AttributeValue = {
 };
 
 type Props = {
-  id?: string;
   initialData?: FieldValues;
 };
 
-const VariantForm = ({ id, initialData }: Props) => {
+const VariantForm = ({ initialData }: Props) => {
+  const pathname = useNavigate();
   const { showToast } = useToast();
   const [attributes, setAttributes] = useState<AttributeValue[]>([
     { value: "" },
@@ -50,14 +50,16 @@ const VariantForm = ({ id, initialData }: Props) => {
     };
 
     try {
-      const res = id
-        ? await updateVariant({ id, body: formPayload }).unwrap()
+      const res = initialData
+        ? await updateVariant({ id: initialData._id, ...formPayload }).unwrap()
         : await createVariant(formPayload).unwrap();
 
       showToast({
-        message: res.message || (id ? "Variant updated" : "Variant created"),
+        message:
+          res.message || (initialData ? "Variant updated" : "Variant created"),
         type: "success",
       });
+      pathname("/all-variant");
     } catch (err: any) {
       showToast({
         message: err?.data?.message || "Something went wrong",
@@ -70,7 +72,7 @@ const VariantForm = ({ id, initialData }: Props) => {
     <Box>
       <Paper elevation={2} sx={{ p: 4 }}>
         <FormHeader
-          title={id ? "Update Variant" : "Create a New Variant"}
+          title={initialData ? "Update Variant" : "Create a New Variant"}
           subTitle="Define variant types like Color, Size, Material, etc."
         />
 
@@ -128,7 +130,7 @@ const VariantForm = ({ id, initialData }: Props) => {
                 variant="contained"
                 disabled={isCreating || isUpdating}
               >
-                {id ? "Update Variant" : "Create Variant"}
+                {initialData ? "Update Variant" : "Create Variant"}
               </Button>
             </Grid>
           </Grid>

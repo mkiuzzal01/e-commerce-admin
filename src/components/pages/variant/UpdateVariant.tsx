@@ -12,7 +12,7 @@ export default function UpdateVariant() {
 
   return (
     <Box>
-      <VariantForm id={slug} initialData={data?.data} />
+      <VariantForm initialData={data?.data} />
     </Box>
   );
 }
