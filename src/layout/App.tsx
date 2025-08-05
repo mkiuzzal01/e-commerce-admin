@@ -2,16 +2,12 @@ import { Outlet } from "react-router-dom";
 import { ReactRouterAppProvider } from "@toolpad/core/react-router";
 import { DashboardLayout, ThemeSwitcher } from "@toolpad/core/DashboardLayout";
 import {
-  IconButton,
   Stack,
-  TextField,
-  Tooltip,
   createTheme,
   ThemeProvider,
   CssBaseline,
   Paper,
 } from "@mui/material";
-import { SearchIcon } from "lucide-react";
 import ProtectedRoute from "../route/protectedRoute";
 import User from "./components/User";
 import Notification from "./components/Notification";
@@ -31,38 +27,14 @@ const theme = createTheme({
   },
 });
 
-const branding = {
-  title: "Export-corner",
+const brand = {
+  title: "Export corner",
   homeUrl: "/overview",
-  logo: "",
+  logo: <img src="https://i.ibb.co/N6Lb0jkv/logo.png" alt="Export-corner" />,
 };
 
 const ToolbarActionsSearch = () => (
   <Stack direction="row" alignItems="center" spacing={1}>
-    <Tooltip title="Search" enterDelay={1000}>
-      <IconButton
-        type="button"
-        aria-label="Open search"
-        sx={{ display: { xs: "inline", md: "none" } }}
-      >
-        <SearchIcon size={20} />
-      </IconButton>
-    </Tooltip>
-
-    <TextField
-      label="Search"
-      variant="outlined"
-      size="small"
-      sx={{ display: { xs: "none", md: "inline-flex" }, mr: 1 }}
-      InputProps={{
-        endAdornment: (
-          <IconButton type="button" aria-label="Search" size="small">
-            <SearchIcon size={18} />
-          </IconButton>
-        ),
-      }}
-    />
-
     <ThemeSwitcher />
     <Notification />
   </Stack>
@@ -73,7 +45,7 @@ const App = () => {
     <ProtectedRoute>
       <ThemeProvider theme={theme}>
         <CssBaseline />
-        <ReactRouterAppProvider navigation={navigation} branding={branding}>
+        <ReactRouterAppProvider navigation={navigation} branding={brand}>
           <DashboardLayout
             slots={{
               toolbarActions: ToolbarActionsSearch,

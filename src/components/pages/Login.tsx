@@ -8,11 +8,7 @@ import { verifyToken } from "../../lib/verifyToken";
 import { setUser, type TUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../utils/tost-alert/ToastProvider";
 import Loader from "../../shared/Loader";
-
-type FormValues = {
-  email: string;
-  password: string;
-};
+import type { FieldValues } from "react-hook-form";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -22,11 +18,11 @@ const Login = () => {
 
   if (isLoading) return <Loader />;
 
-  const onSubmit = async (data: FormValues) => {
+  const onSubmit = async (values: FieldValues) => {
     try {
-      const res = await login(data).unwrap();
-      const user = verifyToken(res.data.accessToken) as TUser;
-      dispatch(setUser({ user: user, token: res.data.accessToken }));
+      const res = await login(values).unwrap();
+      const user = verifyToken(res?.data?.accessToken) as TUser;
+      dispatch(setUser({ user: user, token: res?.data?.accessToken }));
       navigate("/overview", { replace: true });
 
       showToast({
@@ -60,16 +56,16 @@ const Login = () => {
         <ReusableForm
           onSubmit={onSubmit}
           defaultValues={{
-            email: "superadmin@gmail.com",
-            password: "12345678",
+            emailOrPhone: "superadmin@gmail.com",
+            password: "123456",
           }}
         >
           <TextInput
-            name="email"
-            label="Email"
-            type="email"
+            name="emailOrPhone"
+            label="Email or phone"
+            type="text"
             variant="standard"
-            placeholder="Enter your email"
+            placeholder="Enter your email or phone"
             required
           />
           <TextInput

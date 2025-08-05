@@ -18,8 +18,18 @@ import AutocompleteInput from "../../utils/input-fields/AutocompleteInput";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import type { FieldValue } from "react-hook-form";
 import InputWithSuggestion from "../../utils/input-fields/InputWithSuggestion";
+import { useGetImageByIdQuery } from "../../../redux/features/gallery/image-api";
+import { useAppSelector } from "../../../redux/hooks";
+import { AddAPhoto } from "@mui/icons-material";
+import ReusableDrawer from "../../../shared/ReusableDrawer";
+import Images from "../../gallery/Images";
 
 const CreateCategory = () => {
+  const [mainImageDrawerOpen, setMainImageDrawerOpen] = useState(false);
+  const selectedId = useAppSelector((state) => state.selectedId?.selectedId);
+  const { data: image, isLoading: isImageLoading } = useGetImageByIdQuery(
+    selectedId || null
+  );
   const [isSubCate, setSubCate] = useState(false);
   const [isCate, setCate] = useState(false);
   const { showToast } = useToast();
@@ -66,14 +76,13 @@ const CreateCategory = () => {
     })) || [];
 
   const onSubmitMainCategory = async (data: FieldValue<any>) => {
-    console.log(data);
     try {
       const payload = {
         name: data?.mainCategory?.value,
         category: data?.category,
         subCategory: data?.subCategory,
+        image: selectedId,
       };
-
       const res = await createMainCategory(payload).unwrap();
       if (res?.success) {
         showToast({
@@ -156,9 +165,66 @@ const CreateCategory = () => {
         />
 
         <Grid container spacing={3}>
+          <Grid size={{ xs: 12, md: 6 }} mt={2}>
+            <Box>
+              <Box sx={{ display: "flex", flexWrap: "wrap", gap: 1.5, mb: 2 }}>
+                {isImageLoading ? (
+                  <Loader />
+                ) : selectedId ? (
+                  <Box
+                    sx={{
+                      position: "relative",
+                      width: 100,
+                      height: 100,
+                      borderRadius: 2,
+                      overflow: "hidden",
+                    }}
+                  >
+                    <img
+                      src={image?.data?.photo?.url}
+                      alt={image?.data?.photoName || "Selected Image"}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                      }}
+                    />
+                    {image?.data?.photoName && (
+                      <Box fontWeight={500} fontSize={14} mt={1}>
+                        {image?.data?.photoName}
+                      </Box>
+                    )}
+                  </Box>
+                ) : (
+                  <Box
+                    sx={{
+                      width: "100%",
+                      py: 4,
+                      borderRadius: 1,
+                      textAlign: "center",
+                      color: "text.secondary",
+                      border: "1px dashed #ccc",
+                      fontSize: 14,
+                    }}
+                  >
+                    No Image Selected
+                  </Box>
+                )}
+              </Box>
+
+              <Button
+                variant="outlined"
+                onClick={() => setMainImageDrawerOpen(true)}
+                startIcon={<AddAPhoto />}
+              >
+                {selectedId ? "Change Image" : "Add Image"}
+              </Button>
+            </Box>
+          </Grid>
           <Grid
             size={{
               xs: 12,
+              md: 6,
             }}
           >
             <Box
@@ -330,6 +396,17 @@ const CreateCategory = () => {
           </ReusableForm>
         </Grid>
       </ReusableModal>
+      {/* Image Drawer */}
+      <ReusableDrawer
+        width="50%"
+        open={mainImageDrawerOpen}
+        onClose={() => {
+          setMainImageDrawerOpen(false);
+          return true;
+        }}
+      >
+        <Images selectionMode="single" />
+      </ReusableDrawer>
     </Box>
   );
 };
