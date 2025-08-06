@@ -128,26 +128,26 @@ const ProductForm = ({ initialData }: Pros) => {
           id: initialData._id,
           ...formData,
         });
+
+        console.log(res);
         if (res?.success) {
           showToast({
             message: "Product updated successfully",
             type: "success",
           });
         }
+      } else {
+        const res = await createProduct(formData);
+        if (res?.success) {
+          showToast({
+            message: "Product created successfully",
+            type: "success",
+          });
+        }
       }
-
-      const res = await createProduct(formData);
-      if (res?.success) {
-        showToast({ message: "Product created successfully", type: "success" });
-      }
-
       pathname("/all-product");
-      showToast({ message: "Something went wrong", type: "error" });
     } catch {
-      showToast({
-        message: "Failed to submit the form",
-        type: "error",
-      });
+      showToast({ message: "Something went wrong", type: "error" });
     }
   };
 

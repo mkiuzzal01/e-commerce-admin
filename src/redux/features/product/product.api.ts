@@ -53,23 +53,6 @@ const ProductApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
-
-    // Get product variants
-    productVariants: builder.query({
-      query: (productId: string) => ({
-        url: `/product/variants/${productId}`,
-        method: "GET",
-      }),
-    }),
-
-    // Update product variants
-    updateProductVariants: builder.mutation({
-      query: ({ productId, variants }) => ({
-        url: `/product/update-variants/${productId}`,
-        method: "PATCH",
-        body: { variants },
-      }),
-    }),
   }),
 });
 
@@ -80,6 +63,4 @@ export const {
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
-  useProductVariantsQuery,
-  useUpdateProductVariantsMutation,
 } = ProductApi;

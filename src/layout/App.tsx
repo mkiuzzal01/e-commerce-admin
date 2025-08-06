@@ -12,6 +12,7 @@ import ProtectedRoute from "../route/protectedRoute";
 import User from "./components/User";
 import Notification from "./components/Notification";
 import { navigation } from "./navigation";
+import logo from "../assets/logo.png";
 
 const theme = createTheme({
   palette: {
@@ -30,7 +31,7 @@ const theme = createTheme({
 const brand = {
   title: "Export corner",
   homeUrl: "/overview",
-  logo: <img src="https://i.ibb.co/N6Lb0jkv/logo.png" alt="Export-corner" />,
+  logo: <img src={logo} alt="Export-corner" />,
 };
 
 const ToolbarActionsSearch = () => (
