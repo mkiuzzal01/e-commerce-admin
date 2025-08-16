@@ -1,9 +1,10 @@
-// DataTable.tsx (Reusable Component)
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, type ChangeEvent, type MouseEvent } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import {
   DataGrid,
   type GridColDef,
+  type GridPaginationModel,
   type GridRenderCellParams,
 } from "@mui/x-data-grid";
 import {
@@ -23,7 +24,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
 import SelectInputField from "../components/utils/input-fields/SelectInputField";
-import ReusableForm from "./ReusableFrom";
 
 interface RowData {
   _id: string;
@@ -35,6 +35,7 @@ interface Meta {
   total: number;
   page: number;
   limit: number;
+  totalPages: number;
 }
 
 interface TableProps {
@@ -43,7 +44,7 @@ interface TableProps {
   title?: string;
   updatePath?: string;
   viewPath?: string;
-  createPath: string;
+  createPath?: string;
   onDelete?: (id: string) => void;
   setSearch?: (value: string) => void;
   search?: string;
@@ -52,8 +53,6 @@ interface TableProps {
   options?: string[];
   page?: number;
   setPage?: (value: number) => void;
-  limit?: number;
-  setLimit?: (value: number) => void;
   meta?: Meta;
 }
 
@@ -68,11 +67,9 @@ const DataTable: React.FC<TableProps> = ({
   setSearch,
   search = "",
   setFilter,
-  page,
+  page = 1,
   options,
   setPage,
-  limit,
-  setLimit,
   meta,
 }) => {
   const navigate = useNavigate();
@@ -87,6 +84,10 @@ const DataTable: React.FC<TableProps> = ({
   const handleMenuClose = () => {
     setMenuAnchor(null);
     setSelectedRowId(null);
+  };
+
+  const handlePaginationChange = (model: GridPaginationModel) => {
+    setPage?.(model.page + 1);
   };
 
   const actionColumn: GridColDef = {
@@ -134,7 +135,6 @@ const DataTable: React.FC<TableProps> = ({
               <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
             </MenuItem>
           )}
-
           {onDelete && (
             <MenuItem
               onClick={() => {
@@ -153,6 +153,7 @@ const DataTable: React.FC<TableProps> = ({
 
   return (
     <Box>
+      {/* Title */}
       <Typography
         variant="h5"
         sx={{ mb: 2, fontWeight: 600, textAlign: "center" }}
@@ -160,13 +161,9 @@ const DataTable: React.FC<TableProps> = ({
         {title}
       </Typography>
 
+      {/* Toolbar (back, add, search, filter) */}
       <Grid container spacing={2} alignItems="center" sx={{ mb: 2 }}>
-        <Grid
-          size={{
-            xs: 12,
-            md: 2,
-          }}
-        >
+        <Grid size={{ xs: 12, md: 2 }}>
           <Box sx={{ display: "flex", gap: 2 }}>
             <Fab
               size="small"
@@ -176,79 +173,61 @@ const DataTable: React.FC<TableProps> = ({
             >
               <ArrowBackIcon />
             </Fab>
-            <Link to={createPath}>
-              <Fab size="small" color="primary" title="Add New">
-                <AddIcon />
-              </Fab>
-            </Link>
+            {createPath && (
+              <Link to={createPath}>
+                <Fab size="small" color="primary" title="Add New">
+                  <AddIcon />
+                </Fab>
+              </Link>
+            )}
           </Box>
         </Grid>
 
         {(setSearch || setFilter) && (
-          <Grid
-            size={{
-              xs: 12,
-              md: 10,
-            }}
-          >
-            <ReusableForm>
-              <Grid container spacing={2}>
-                {setSearch && (
-                  <Grid
-                    size={{
-                      xs: 12,
-                      md: options ? 6 : 12,
-                    }}
-                  >
-                    <TextField
-                      label="Search"
-                      fullWidth
-                      variant="outlined"
-                      value={search}
-                      onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                        setSearch(e.target.value)
-                      }
-                    />
-                  </Grid>
-                )}
-                {options && (
-                  <Grid
-                    size={{
-                      xs: 12,
-                      md: setSearch ? 6 : 12,
-                    }}
-                  >
-                    <SelectInputField
-                      label="Filter by status"
-                      name="status"
-                      options={options}
-                      onChange={(value: string) => setFilter?.(value)}
-                    />
-                  </Grid>
-                )}
-              </Grid>
-            </ReusableForm>
+          <Grid size={{ xs: 12, md: 10 }}>
+            <Grid container spacing={2}>
+              {setSearch && (
+                <Grid size={{ xs: 12, md: options ? 6 : 12 }}>
+                  <TextField
+                    label="Search"
+                    fullWidth
+                    variant="outlined"
+                    value={search}
+                    onChange={(e: ChangeEvent<HTMLInputElement>) =>
+                      setSearch(e.target.value)
+                    }
+                  />
+                </Grid>
+              )}
+              {options && (
+                <Grid size={{ xs: 12, md: setSearch ? 6 : 12 }}>
+                  <SelectInputField
+                    label="Filter by status"
+                    name="status"
+                    options={options}
+                    onChange={(value: string) => setFilter?.(value)}
+                  />
+                </Grid>
+              )}
+            </Grid>
           </Grid>
         )}
       </Grid>
 
+      {/* DataGrid */}
       <DataGrid
         rows={rows}
         columns={[...columns, actionColumn]}
         getRowId={(row) => row._id}
-        autoHeight
         disableRowSelectionOnClick
+        autoHeight
         paginationMode="server"
-        rowCount={meta?.total || 0}
-        paginationModel={{ page: (page ?? 1) - 1, pageSize: limit ?? 10 }}
-        onPaginationModelChange={({ page: newPage, pageSize: newLimit }) => {
-          setPage?.(newPage + 1);
-          if (newLimit !== limit) {
-            setLimit?.(newLimit);
-            setPage?.(1);
-          }
+        rowCount={meta?.total ?? 0}
+        paginationModel={{
+          page: (page ?? 1) - 1,
+          pageSize: meta?.limit ?? 10,
         }}
-        pageSizeOptions={[5, 10, 20, 50, 100]}
+        onPaginationModelChange={handlePaginationChange}
       />
     </Box>
   );

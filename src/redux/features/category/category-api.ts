@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../api/baseApi";
 
 const categoryApi = baseApi.injectEndpoints({
@@ -24,20 +25,22 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     allMainCategory: builder.query({
-      query: ({ search }: { search?: string }) => {
-        const query = new URLSearchParams();
-        if (search) query.append("searchTerm", search);
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
+        const queryString = new URLSearchParams(queryParams).toString();
         return {
-          url: `/category/all-main-category?${query.toString()}`,
+          url: `/category/all-main-category?${queryString}`,
           method: "GET",
         };
       },
+      providesTags: ["all-main-category"],
     }),
+
     singleMainCategory: builder.query({
       query: (slug: string) => ({
         url: `/category/single-main-category/${slug}`,
         method: "GET",
       }),
+      providesTags: ["single-main-category"],
     }),
 
     // Category
@@ -61,22 +64,24 @@ const categoryApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
+
     allCategory: builder.query({
-      query: ({ search }: { search?: string }) => {
-        const query = new URLSearchParams();
-        if (search) query.append("searchTerm", search);
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
+        const queryString = new URLSearchParams(queryParams).toString();
         return {
-          url: `/category/all-category?${query.toString()}`,
+          url: `/category/all-category?${queryString}`,
           method: "GET",
         };
       },
-      transformResponse: (response: any) => response.data,
+      providesTags: ["all-category"],
     }),
+
     singleCategory: builder.query({
       query: (slug: string) => ({
         url: `/category/single-category/${slug}`,
         method: "GET",
       }),
+      providesTags: ["single-category"],
     }),
 
     // Sub Category
@@ -101,20 +106,22 @@ const categoryApi = baseApi.injectEndpoints({
       }),
     }),
     allSubCategory: builder.query({
-      query: ({ search }: { search?: string }) => {
-        const query = new URLSearchParams();
-        if (search) query.append("searchTerm", search);
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
+        const queryString = new URLSearchParams(queryParams).toString();
         return {
-          url: `/category/all-sub-category?${query.toString()}`,
+          url: `/category/all-sub-category?${queryString}`,
           method: "GET",
         };
       },
+      providesTags: ["all-sub-category"],
     }),
+
     singleSubCategory: builder.query({
       query: (slug: string) => ({
         url: `/category/single-sub-category/${slug}`,
         method: "GET",
       }),
+      providesTags: ["single-sub-category"],
     }),
   }),
 });

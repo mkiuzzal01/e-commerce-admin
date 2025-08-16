@@ -59,20 +59,20 @@ const CreateCategory = () => {
 
   const subCategoryOptions =
     subCategoryData?.data?.result?.map((item: any) => ({
-      label: item.name,
-      value: item._id,
+      label: item?.name,
+      value: item?._id,
     })) || [];
 
   const mainCategoryOptions =
     mainCategoryData?.data?.result?.map((item: any) => ({
-      label: item.name,
-      value: item._id,
+      label: item?.name,
+      value: item?._id,
     })) || [];
 
   const categoryOptions =
-    categoryData?.result?.map((item: any) => ({
-      label: item.name,
-      value: item._id,
+    categoryData?.data?.result?.map((item: any) => ({
+      label: item?.name,
+      value: item?._id,
     })) || [];
 
   const onSubmitMainCategory = async (data: FieldValue<any>) => {
@@ -153,6 +153,7 @@ const CreateCategory = () => {
       });
     }
   };
+
 
   if (subLoading || mainLoading || categoryLoading) return <Loader />;
 

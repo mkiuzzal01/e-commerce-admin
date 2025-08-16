@@ -4,13 +4,14 @@ const userApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     //get all users:
     allUsers: builder.query({
-      query: (queryParams: Record<string, any>) => {
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
         const queryString = new URLSearchParams(queryParams).toString();
         return {
           url: `/user/all-user?${queryString}`,
           method: "GET",
         };
       },
+      providesTags: ["all-user"],
     }),
 
     //this is single users by slug:
@@ -19,6 +20,7 @@ const userApi = baseApi.injectEndpoints({
         url: `/user/single-user/${slug}`,
         method: "GET",
       }),
+      providesTags: ["single-user"],
     }),
     //update user
     updateUser: builder.mutation({

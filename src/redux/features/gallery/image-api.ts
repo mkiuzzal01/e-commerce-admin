@@ -25,18 +25,18 @@ const imageApi = baseApi.injectEndpoints({
         method: "DELETE",
       }),
     }),
-    //get all images:
+    // get all images:
     getImages: builder.query({
-      query: ({ folderId, search }) => {
-        const query = new URLSearchParams();
-        if (folderId) query.append("folderId", folderId); 
-        if (search) query.append("searchTerm", search);
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
+        const queryString = new URLSearchParams(queryParams).toString();
         return {
-          url: `/gallery/all-photo?${query.toString()}`,
+          url: `/gallery/all-photo?${queryString}`,
           method: "GET",
         };
       },
+      providesTags: ["all-photo"],
     }),
+
     //get image by id:
     getImageById: builder.query({
       query: (id) => ({

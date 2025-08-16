@@ -1,15 +1,17 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../api/baseApi";
 
 const ProductApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     allProducts: builder.query({
-      query: (queryParams: Record<string, any>) => {
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
         const queryString = new URLSearchParams(queryParams).toString();
         return {
           url: `/product/all-product?${queryString}`,
           method: "GET",
         };
       },
+      providesTags: ["all-product"],
     }),
 
     // Get single product by slug
@@ -18,6 +20,7 @@ const ProductApi = baseApi.injectEndpoints({
         url: `/product/single-product/${slug}`,
         method: "GET",
       }),
+      providesTags: ["single-product"],
     }),
 
     // Get single product by ID

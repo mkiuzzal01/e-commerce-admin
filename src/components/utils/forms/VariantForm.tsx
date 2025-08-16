@@ -10,6 +10,7 @@ import {
 } from "../../../redux/features/variant/variant-api";
 import type { FieldValues } from "react-hook-form";
 import { useToast } from "../tost-alert/ToastProvider";
+import { useNavigate } from "react-router-dom";
 
 type AttributeValue = {
   value: string;

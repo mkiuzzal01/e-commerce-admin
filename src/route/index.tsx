@@ -7,7 +7,6 @@ import CreateVariant from "../components/pages/variant/CreateVariant";
 import AllVariant from "../components/pages/variant/AllVariant";
 import CreateCategory from "../components/pages/category/CreateCategory";
 import AllCategory from "../components/pages/category/AllCategory";
-import AllOrder from "../components/pages/order/AllOrder";
 import AllFeedback from "../components/pages/feedback/AllFeedback";
 import Images from "../components/gallery/Images";
 import Login from "../components/pages/Login";
@@ -31,6 +30,9 @@ import UpdateAdvertisement from "../components/pages/advertisement/UpdateAdverti
 import CreateBannerContent from "../components/pages/banner-content/CreateBannerContent";
 import AllBannerContent from "../components/pages/banner-content/AllBannerContent";
 import UpdateBannerContent from "../components/pages/banner-content/UpdateBannerContent";
+import ViewOrder from "../components/pages/order/ViewOrder";
+import AllOrder from "../components/pages/order/AllOrder";
+import UpdateOrder from "../components/pages/order/UpdateOrder";
 export const route = createBrowserRouter([
   {
     Component: App,
@@ -56,6 +58,8 @@ export const route = createBrowserRouter([
       { path: "view-categories/:slug", Component: ViewCategories },
       { path: "all-category", Component: AllCategory },
       { path: "all-order", Component: AllOrder },
+      { path: "view-order/:slug", Component: ViewOrder },
+      { path: "update-order/:slug", Component: UpdateOrder },
       { path: "create-advertisement", Component: CreateAdvertisement },
       { path: "all-advertisement", Component: AllAdvertisement },
       { path: "update-advertisement/:slug", Component: UpdateAdvertisement },

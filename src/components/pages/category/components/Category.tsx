@@ -65,11 +65,19 @@ const columns = [
 ];
 
 export default function Category() {
+  const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const { showToast } = useToast();
-  const { data, isLoading, refetch } = useAllCategoryQuery({ search });
   const [deleteCategory, { isLoading: isDeleting }] =
     useDeleteCategoryMutation();
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+
+  if (search.trim()) queryParams.searchTerm = search.trim();
+  const { data, isLoading, refetch } = useAllCategoryQuery({queryParams});
 
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
@@ -99,16 +107,18 @@ export default function Category() {
 
   //handle loading:
   if (isLoading || isDeleting) return <Loader />;
-  console.log(data?.result);
+
   return (
     <div>
       <DataTable
-        rows={data?.result || []}
+        title="All Categories"
+        rows={data?.data?.result || []}
+        meta={data?.data?.meta}
         columns={columns}
         search={search}
         onDelete={handleDelete}
         setSearch={setSearch}
-        title="Categories"
+        setPage={setPage}
         createPath="/create-category"
         updatePath="/update-category"
       />

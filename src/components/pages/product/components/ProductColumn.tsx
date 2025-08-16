@@ -1,6 +1,6 @@
 import { Avatar, Fab } from "@mui/material";
 
-export const UserColumn = [
+export const ProductColumn = [
   {
     field: "image",
     headerName: "Image",

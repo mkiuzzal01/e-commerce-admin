@@ -29,6 +29,7 @@ const variantApi = baseApi.injectEndpoints({
         url: "/variant/all-variant",
         method: "GET",
       }),
+      providesTags: ["all-variant"],
     }),
     //get single variant:
     singleVariant: builder.query({
@@ -36,6 +37,7 @@ const variantApi = baseApi.injectEndpoints({
         url: `/variant/single-variant/${slug}`,
         method: "GET",
       }),
+      providesTags: ["single-variant"],
     }),
   }),
 });

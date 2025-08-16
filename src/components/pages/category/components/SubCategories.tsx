@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import type { GridColDef } from "@mui/x-data-grid";
 import {
   useAllSubCategoryQuery,
@@ -65,17 +66,24 @@ const subCategoryColumns: GridColDef[] = [
 ];
 
 export default function SubCategories() {
-  const { showToast } = useToast();
+  const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
+  const { showToast } = useToast();
+  const [deleteSubCategory, { isLoading: deleting }] =
+    useDeleteSubCategoryMutation();
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+
+  if (search.trim()) queryParams.searchTerm = search.trim();
 
   const {
     data: subCate,
     isLoading: loadingData,
     refetch,
-  } = useAllSubCategoryQuery({ search });
-
-  const [deleteSubCategory, { isLoading: deleting }] =
-    useDeleteSubCategoryMutation();
+  } = useAllSubCategoryQuery({ queryParams });
 
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
@@ -112,11 +120,13 @@ export default function SubCategories() {
       <DataTable
         title="All Sub Categories"
         rows={subCate?.data?.result || []}
+        meta={subCate?.data?.meta}
         columns={subCategoryColumns}
         updatePath="/update-sub-category"
         createPath="/create-category"
         onDelete={handleDelete}
         setSearch={setSearch}
+        setPage={setPage}
         search={search}
       />
     </div>

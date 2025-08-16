@@ -8,6 +8,7 @@ import {
 } from "@reduxjs/toolkit/query/react";
 import type { RootState } from "../store";
 import { logout, setUser, type TUser } from "../features/auth/authSlice";
+import { tagTypes } from "./tagTypes";
 
 //this is the  base query:
 const baseQuery = fetchBaseQuery({
@@ -37,8 +38,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
     console.log(result.error);
   }
   if (result?.error?.status === 401) {
-
-
     const res = await fetch(
       `${import.meta.env.VITE_REACT_APP_BASE_URL}/auth/refresh-token`,
       {
@@ -70,5 +69,6 @@ const baseQueryWithRefreshToken: BaseQueryFn<
 export const baseApi = createApi({
   reducerPath: "baseApi",
   baseQuery: baseQueryWithRefreshToken,
+  tagTypes: tagTypes,
   endpoints: () => ({}),
 });

@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
   Box,
@@ -20,6 +21,8 @@ import type { TFolder } from "./TGallery";
 import { useGetImagesQuery } from "../../redux/features/gallery/image-api";
 import ReusableDrawer from "../../shared/ReusableDrawer";
 import AddMultipleImages from "../utils/gallery/AddImage";
+import ReusablePagination from "../../shared/ReusablePagination";
+import Empty from "../../shared/Empty";
 
 interface ImagesProps {
   selectionMode?: "single" | "multiple";
@@ -32,25 +35,35 @@ export default function Images({
   onSelectImage,
   excludeIds = [],
 }: ImagesProps) {
+  const theme = useTheme();
+  const [page, setPage] = useState<number>(1);
   const [open, setOpen] = useState<boolean>(false);
   const [selectedImages, setSelectedImages] = useState<string[]>([]);
   const { data: foldersData, isFetching } = useGetFoldersQuery({});
   const [folderId, setFolderId] = useState<string>("");
   const [search, setSearch] = useState<string>("");
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 24,
+  };
+
+  if (search.trim()) queryParams.searchTerm = search.trim();
+  if (folderId) queryParams.folderId = folderId;
+
   const {
     data: imagesData,
     isLoading,
     refetch,
   } = useGetImagesQuery({
-    folderId: folderId || "",
-    search: search || "",
+    queryParams,
   });
-  const theme = useTheme();
-  const handleFolderChange = (id: string) => setFolderId(id);
+
+  const totalPages = imagesData?.data?.meta?.totalPages || 1;
 
   const handleImageSelect = (image: any) => {
     if (selectionMode === "single") {
-        setSelectedImages([image._id]);
+      setSelectedImages([image._id]);
     } else {
       // Multiple selection mode
       setSelectedImages((prev) =>
@@ -76,7 +89,7 @@ export default function Images({
         <Grid size={{ xs: 12, md: 4 }}>
           <Select
             value={folderId}
-            onChange={(e) => handleFolderChange(e.target.value)}
+            onChange={(e) => setFolderId(e?.target?.value)}
             fullWidth
             displayEmpty
             MenuProps={{
@@ -87,8 +100,8 @@ export default function Images({
               <em>Select folder</em>
             </MenuItem>
             {foldersData?.data?.result?.map((folder: TFolder) => (
-              <MenuItem key={folder._id} value={folder._id}>
-                {folder.name}
+              <MenuItem key={folder?._id} value={folder?._id}>
+                {folder?.name}
               </MenuItem>
             ))}
           </Select>
@@ -119,7 +132,6 @@ export default function Images({
         </Grid>
       </Grid>
 
-     
       {/* side drawer for uploading images */}
       <ReusableDrawer
         open={open}
@@ -146,14 +158,29 @@ export default function Images({
       <Box sx={{ my: 3, borderBottom: `1px solid ${theme.palette.divider}` }} />
 
       {/* load all images from database */}
-      <AllImage
-        refetch={refetch}
-        imagesData={filteredImages}
-        selectionMode={selectionMode}
-        selectedImages={selectedImages}
-        onImageSelect={handleImageSelect}
-        setSelectImage={selectionMode === "single" ? onSelectImage : undefined}
-      />
+      {filteredImages.length === 0 ? (
+        <Empty heading="No images found" />
+      ) : (
+        <Box>
+          <AllImage
+            refetch={refetch}
+            imagesData={filteredImages}
+            selectionMode={selectionMode}
+            selectedImages={selectedImages}
+            onImageSelect={handleImageSelect}
+            setSelectImage={
+              selectionMode === "single" ? onSelectImage : undefined
+            }
+          />
+          <Box>
+            <ReusablePagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </Box>
+        </Box>
+      )}
     </Paper>
   );
 }

@@ -16,7 +16,6 @@ import {
   useUpdateImageMutation,
 } from "../../../redux/features/gallery/image-api";
 import { useToast } from "../tost-alert/ToastProvider";
-import Empty from "../../../shared/Empty";
 import { useState } from "react";
 import ReusableModal from "../../../shared/ReusableModal";
 import ReusableForm from "../../../shared/ReusableFrom";
@@ -130,159 +129,151 @@ const AllImage = ({
 
   return (
     <Box>
-      {imagesData?.length > 0 ? (
-        <Grid container spacing={2} sx={{ pt: 2 }}>
-          {imagesData.map((item) => (
-            <Grid
-              key={item._id}
-              size={{ xs: 6, md: 2 }}
-              sx={{ cursor: "pointer" }}
+      <Grid container spacing={2} sx={{ pt: 2 }}>
+        {imagesData.map((item) => (
+          <Grid
+            key={item._id}
+            size={{ xs: 6, md: 2 }}
+            sx={{ cursor: "pointer" }}
+          >
+            <Paper
+              onClick={() => handleSelect(item)}
+              sx={{
+                position: "relative",
+                borderRadius: 2,
+                height: 100,
+                width: 100,
+                overflow: "hidden",
+                border:
+                  (selectedId === item._id && !path) ||
+                  selectedImages.includes(item._id)
+                    ? "2px solid #0000FF"
+                    : "2px solid transparent",
+                transition: "0.3s",
+                "&:hover .overlay": {
+                  opacity: 0.5,
+                },
+                "&:hover .image-actions": {
+                  opacity: 1,
+                  visibility: "visible",
+                },
+              }}
             >
-              <Paper
-                onClick={() => handleSelect(item)}
-                sx={{
-                  position: "relative",
-                  borderRadius: 2,
-                  height: 100,
-                  width: 100,
-                  overflow: "hidden",
-                  border:
-                    (selectedId === item._id && !path) ||
-                    selectedImages.includes(item._id)
-                      ? "2px solid #0000FF"
-                      : "2px solid transparent",
-                  transition: "0.3s",
-                  "&:hover .overlay": {
-                    opacity: 0.5,
-                  },
-                  "&:hover .image-actions": {
-                    opacity: 1,
-                    visibility: "visible",
-                  },
-                }}
-              >
-                {/* Image */}
-                <Box>
-                  <img
-                    src={item?.photo?.url || "/placeholder.png"}
-                    alt={item?.photoName}
-                    style={{
+              {/* Image */}
+              <Box>
+                <img
+                  src={item?.photo?.url || "/placeholder.png"}
+                  alt={item?.photoName}
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                  }}
+                />
+              </Box>
+
+              {path && (
+                <>
+                  <Box
+                    className="overlay"
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
                       width: "100%",
                       height: "100%",
-                      objectFit: "cover",
+                      bgcolor: "#000",
+                      opacity: 0,
+                      transition: "opacity 0.3s ease",
+                      zIndex: 1,
                     }}
                   />
-                </Box>
-
-                {path && (
-                  <>
-                    <Box
-                      className="overlay"
-                      sx={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        width: "100%",
-                        height: "100%",
-                        bgcolor: "#000",
-                        opacity: 0,
-                        transition: "opacity 0.3s ease",
-                        zIndex: 1,
-                      }}
-                    />
-                    <Box
-                      className="image-actions"
-                      sx={{
-                        position: "absolute",
-                        top: 8,
-                        right: 8,
-                        display: "flex",
-                        gap: 1,
-                        opacity: 0,
-                        visibility: "hidden",
-                        zIndex: 2,
-                        transition: "opacity 0.3s ease",
-                      }}
-                    >
-                      <Tooltip title="Rename">
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            setRename(true);
-                            setSelected(item);
+                  <Box
+                    className="image-actions"
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      display: "flex",
+                      gap: 1,
+                      opacity: 0,
+                      visibility: "hidden",
+                      zIndex: 2,
+                      transition: "opacity 0.3s ease",
+                    }}
+                  >
+                    <Tooltip title="Rename">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setRename(true);
+                          setSelected(item);
+                        }}
+                      >
+                        <DriveFileRenameOutline
+                          sx={{
+                            fontSize: 22,
+                            color: theme.palette.grey[100],
                           }}
-                        >
-                          <DriveFileRenameOutline
+                        />
+                      </IconButton>
+                    </Tooltip>
+
+                    <Tooltip title="Delete">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleDelete(item._id);
+                        }}
+                      >
+                        {isDeleting ? (
+                          <CircularProgress size={20} />
+                        ) : (
+                          <Delete
                             sx={{
                               fontSize: 22,
-                              color: theme.palette.grey[100],
+                              color: theme.palette.error.light,
                             }}
                           />
-                        </IconButton>
-                      </Tooltip>
+                        )}
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </>
+              )}
 
-                      <Tooltip title="Delete">
-                        <IconButton
-                          size="small"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleDelete(item._id);
-                          }}
-                        >
-                          {isDeleting ? (
-                            <CircularProgress size={20} />
-                          ) : (
-                            <Delete
-                              sx={{
-                                fontSize: 22,
-                                color: theme.palette.error.light,
-                              }}
-                            />
-                          )}
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </>
-                )}
-
-                {/* Image Name */}
-                <Box
-                  sx={{
-                    position: "absolute",
-                    bottom: 0,
-                    width: "100%",
-                    bgcolor: "rgba(0, 0, 0, 0.6)",
-                    px: 1,
-                    py: 0.5,
-                    zIndex: 2,
-                  }}
-                >
-                  <Tooltip title={item?.photoName}>
-                    <Typography
-                      variant="caption"
-                      color="white"
-                      noWrap
-                      sx={{ fontSize: "0.75rem" }}
-                    >
-                      {item?.photoName}
-                    </Typography>
-                  </Tooltip>
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
-      ) : (
-        <Empty heading="No images found" refetch={refetch} />
-      )}
+              {/* Image Name */}
+              <Box
+                sx={{
+                  position: "absolute",
+                  bottom: 0,
+                  width: "100%",
+                  bgcolor: "rgba(0, 0, 0, 0.6)",
+                  px: 1,
+                  py: 0.5,
+                  zIndex: 2,
+                }}
+              >
+                <Tooltip title={item?.photoName}>
+                  <Typography
+                    variant="caption"
+                    color="white"
+                    noWrap
+                    sx={{ fontSize: "0.75rem" }}
+                  >
+                    {item?.photoName}
+                  </Typography>
+                </Tooltip>
+              </Box>
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
 
       {/* Edit Modal */}
-      <ReusableModal
-        open={renameOpen}
-        onClose={() => setRename(false)}
-        width={600}
-      >
+      <ReusableModal open={renameOpen} onClose={() => setRename(false)}>
         <Typography variant="h6" mb={2}>
           Rename image
         </Typography>

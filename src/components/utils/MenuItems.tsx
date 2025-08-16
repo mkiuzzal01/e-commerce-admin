@@ -10,7 +10,7 @@ type MenuItemsProps = {
 const MenuItems = ({ route, icon, name }: MenuItemsProps) => {
   return (
     <NavLink
-      to={route}
+      to={route || " "}
       className={({ isActive }) =>
         `flex items-center space-x-2 p-2 rounded transition ${
           isActive ? " text-yellow-400" : "text-white hover:text-yellow-400"

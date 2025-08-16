@@ -24,7 +24,7 @@ const CreateFeedback = () => {
                 name="description"
                 label="Description"
                 multiline
-                row={4}
+                rows={4}
                 required
               />
             </Grid>

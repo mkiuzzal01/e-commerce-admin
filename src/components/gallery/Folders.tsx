@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
   Box,
@@ -28,21 +29,30 @@ import {
 import { useToast } from "../utils/tost-alert/ToastProvider";
 import type { FieldValue } from "react-hook-form";
 import type { TFolder } from "./TGallery";
+import ReusablePagination from "../../shared/ReusablePagination";
 
 const Folders = () => {
   const theme = useTheme();
+  const { showToast } = useToast();
+  const [page, setPage] = useState<number>(1);
   const [createOpen, setCreateOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
   const [selectedFolder, setSelectedFolder] = useState<TFolder | null>(null);
-
-  const { data: foldersData, refetch } = useGetFoldersQuery({
-    search: searchTerm,
-  });
   const [createFolder, { isLoading: isCreating }] = useCreateFolderMutation();
   const [deleteFolder, { isLoading: isDeleting }] = useDeleteFolderMutation();
   const [updateFolder, { isLoading: isUpdating }] = useUpdateFolderMutation();
-  const { showToast } = useToast();
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 24,
+  };
+  if (search.trim()) queryParams.searchTerm = search.trim();
+  
+  const { data: foldersData, refetch } = useGetFoldersQuery({
+    queryParams,
+  });
+  const totalPages = foldersData?.data?.meta?.totalPages || 1;
 
   const handleCreate = async (data: FieldValue<any>) => {
     try {
@@ -110,8 +120,8 @@ const Folders = () => {
           <OutlinedInput
             fullWidth
             placeholder="Search folders"
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
+            value={search}
+            onChange={(e) => setSearch(e?.target?.value)}
             endAdornment={
               <InputAdornment position="end">
                 <IconButton>
@@ -132,109 +142,120 @@ const Folders = () => {
 
       {/* Folder Grid */}
       {foldersData?.data?.result?.length ? (
-        <Grid container spacing={2}>
-          {foldersData.data.result.map((folder: TFolder) => (
-            <Grid size={{ xs: 6, md: 2 }} key={folder._id}>
-              <Paper
-                sx={{
-                  position: "relative",
-                  overflow: "hidden",
-                  textAlign: "center",
-                  borderRadius: 2,
-                  p: 1,
-                  transition: "0.3s",
-                  "&:hover .overlay": {
-                    opacity: 0.6,
-                  },
-                  "&:hover .folder-actions": {
-                    opacity: 1,
-                    visibility: "visible",
-                  },
-                }}
-              >
-                {/* Folder Image */}
-                <img
-                  src={image1}
-                  alt={folder.name}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderRadius: 8,
-                  }}
-                />
-
-                {/* Folder Name */}
-                <Typography variant="h6" mt={1}>
-                  {folder.name}
-                </Typography>
-
-                {/* Dark Overlay on Hover */}
-                <Box
-                  className="overlay"
+        <Box>
+          <Grid container spacing={2}>
+            {foldersData.data.result.map((folder: TFolder) => (
+              <Grid size={{ xs: 6, md: 2 }} key={folder._id}>
+                <Paper
                   sx={{
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    width: "100%",
-                    height: "100%",
-                    backgroundColor: "#000",
-                    opacity: 0,
-                    transition: "0.3s",
-                    zIndex: 1,
+                    position: "relative",
+                    overflow: "hidden",
+                    textAlign: "center",
                     borderRadius: 2,
-                  }}
-                />
-
-                {/* Action Icons */}
-                <Box
-                  className="folder-actions"
-                  sx={{
-                    position: "absolute",
-                    top: 8,
-                    right: 8,
-                    display: "flex",
-                    gap: 1,
-                    opacity: 0,
-                    visibility: "hidden",
-                    zIndex: 2,
+                    p: 1,
                     transition: "0.3s",
+                    "&:hover .overlay": {
+                      opacity: 0.6,
+                    },
+                    "&:hover .folder-actions": {
+                      opacity: 1,
+                      visibility: "visible",
+                    },
                   }}
                 >
-                  <IconButton
-                    onClick={() => {
-                      setSelectedFolder(folder);
-                      setEditOpen(true);
+                  {/* Folder Image */}
+                  <img
+                    src={image1}
+                    alt={folder.name}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: 8,
                     }}
-                    sx={{ color: "white", backgroundColor: "rgba(0,0,0,0.5)" }}
+                  />
+
+                  {/* Folder Name */}
+                  <Typography variant="h6" mt={1}>
+                    {folder.name}
+                  </Typography>
+
+                  {/* Dark Overlay on Hover */}
+                  <Box
+                    className="overlay"
+                    sx={{
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      width: "100%",
+                      height: "100%",
+                      backgroundColor: "#000",
+                      opacity: 0,
+                      transition: "0.3s",
+                      zIndex: 1,
+                      borderRadius: 2,
+                    }}
+                  />
+
+                  {/* Action Icons */}
+                  <Box
+                    className="folder-actions"
+                    sx={{
+                      position: "absolute",
+                      top: 8,
+                      right: 8,
+                      display: "flex",
+                      gap: 1,
+                      opacity: 0,
+                      visibility: "hidden",
+                      zIndex: 2,
+                      transition: "0.3s",
+                    }}
                   >
-                    <Edit />
-                  </IconButton>
-                  <IconButton
-                    onClick={() => handleDelete(folder._id)}
-                    sx={{ color: "white", backgroundColor: "rgba(0,0,0,0.5)" }}
-                  >
-                    {isDeleting ? (
-                      <CircularProgress size={24} sx={{ color: "white" }} />
-                    ) : (
-                      <DeleteIcon />
-                    )}
-                  </IconButton>
-                </Box>
-              </Paper>
-            </Grid>
-          ))}
-        </Grid>
+                    <IconButton
+                      onClick={() => {
+                        setSelectedFolder(folder);
+                        setEditOpen(true);
+                      }}
+                      sx={{
+                        color: "white",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                      }}
+                    >
+                      <Edit />
+                    </IconButton>
+                    <IconButton
+                      onClick={() => handleDelete(folder._id)}
+                      sx={{
+                        color: "white",
+                        backgroundColor: "rgba(0,0,0,0.5)",
+                      }}
+                    >
+                      {isDeleting ? (
+                        <CircularProgress size={24} sx={{ color: "white" }} />
+                      ) : (
+                        <DeleteIcon />
+                      )}
+                    </IconButton>
+                  </Box>
+                </Paper>
+              </Grid>
+            ))}
+          </Grid>
+          <Box>
+            <ReusablePagination
+              currentPage={page}
+              totalPages={totalPages}
+              onPageChange={setPage}
+            />
+          </Box>
+        </Box>
       ) : (
         <Empty heading="No folders found." refetch={refetch} />
       )}
 
       {/* Create Modal */}
-      <ReusableModal
-        open={createOpen}
-        onClose={() => setCreateOpen(false)}
-        width={600}
-      >
+      <ReusableModal open={createOpen} onClose={() => setCreateOpen(false)}>
         <Typography variant="h6" mb={2}>
           Create New Folder
         </Typography>
@@ -262,11 +283,7 @@ const Folders = () => {
       </ReusableModal>
 
       {/* Edit Modal */}
-      <ReusableModal
-        open={editOpen}
-        onClose={() => setEditOpen(false)}
-        width={600}
-      >
+      <ReusableModal open={editOpen} onClose={() => setEditOpen(false)}>
         <Typography variant="h6" mb={2}>
           Edit Folder
         </Typography>

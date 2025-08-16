@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
   Box,
@@ -129,8 +130,7 @@ const ProductForm = ({ initialData }: Pros) => {
           ...formData,
         });
 
-        console.log(res);
-        if (res?.success) {
+        if (res.data?.success) {
           showToast({
             message: "Product updated successfully",
             type: "success",
@@ -138,7 +138,7 @@ const ProductForm = ({ initialData }: Pros) => {
         }
       } else {
         const res = await createProduct(formData);
-        if (res?.success) {
+        if (res.data?.success) {
           showToast({
             message: "Product created successfully",
             type: "success",

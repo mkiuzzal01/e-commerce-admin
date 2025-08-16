@@ -27,14 +27,14 @@ const folderApi = baseApi.injectEndpoints({
     }),
     //get all folders:
     getFolders: builder.query({
-      query: ({ search }) => {
-        const query = new URLSearchParams();
-        if (search) query.append("searchTerm", search);
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
+        const queryString = new URLSearchParams(queryParams).toString();
         return {
-          url: `/gallery/all-folder?${query.toString()}`,
+          url: `/gallery/all-folder?${queryString}`,
           method: "GET",
         };
       },
+      providesTags: ["all-folder"],
     }),
     //get folder by id:
     getFolderById: builder.query({

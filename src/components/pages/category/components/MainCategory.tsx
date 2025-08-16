@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar, Fab } from "@mui/material";
 import {
   useAllMainCategoryQuery,
@@ -70,11 +71,19 @@ const columns = [
 ];
 
 export default function MainCategory() {
+  const [page, setPage] = useState<number>(1);
   const [search, setSearch] = useState<string>("");
   const { showToast } = useToast();
-  const { data, isLoading, refetch } = useAllMainCategoryQuery({ search });
   const [deleteMainCategory, { isLoading: isDeleting }] =
     useDeleteMainCategoryMutation();
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+
+  if (search.trim()) queryParams.searchTerm = search.trim();
+
+  const { data, isLoading, refetch } = useAllMainCategoryQuery({ queryParams });
 
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
@@ -102,15 +111,18 @@ export default function MainCategory() {
     }
   };
 
+
   //handle loading:
   if (isLoading || isDeleting) return <Loader />;
 
-  console.log(data);
   return (
     <>
       <DataTable
         rows={data?.data?.result || []}
         columns={columns}
+        page={page}
+        meta={data?.data?.meta}
+        setPage={setPage}
         onDelete={handleDelete}
         title="Main Categories"
         search={search}

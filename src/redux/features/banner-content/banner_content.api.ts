@@ -1,21 +1,24 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../api/baseApi";
 
 export const contentApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllBannerContents: builder.query({
-      query: (queryParams) => {
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
         const queryString = new URLSearchParams(queryParams).toString();
         return {
           url: `/content/all-content?${queryString}`,
           method: "GET",
         };
       },
+      providesTags: ["all-content"],
     }),
     getSingleBannerContent: builder.query({
       query: (slug) => ({
         url: `/content/single-content/${slug}`,
         method: "GET",
       }),
+      providesTags: ["single-content"],
     }),
     createBannerContent: builder.mutation({
       query: (body) => ({

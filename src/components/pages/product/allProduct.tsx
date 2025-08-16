@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import Loader from "../../../shared/Loader";
 import { Box } from "@mui/material";
@@ -6,20 +7,26 @@ import {
   useDeleteProductMutation,
 } from "../../../redux/features/product/product.api";
 import DataTable from "../../../shared/DataTable";
-import { UserColumn } from "./components/Column";
+import { ProductColumn } from "./components/ProductColumn";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import { showAlert } from "../../utils/tost-alert/showAlert";
 
 const AllProduct = () => {
   const { showToast } = useToast();
   const [deleteProduct] = useDeleteProductMutation();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+
+  if (search.trim()) queryParams.searchTerm = search.trim();
 
   const { data, isLoading, refetch } = useAllProductsQuery({
-    searchTerm
+    queryParams,
   });
 
   const handleDelete = async (id: string) => {
@@ -56,19 +63,17 @@ const AllProduct = () => {
       <DataTable
         title="All Product"
         rows={data?.data?.result || []}
-        columns={UserColumn}
-        meta={data?.meta}
+        meta={data?.data?.meta}
+        columns={ProductColumn}
         updatePath="/update-product"
         createPath="/create-product"
         onDelete={handleDelete}
-        search={searchTerm}
-        setSearch={setSearchTerm}
+        search={search}
+        setSearch={setSearch}
         filter={status}
         setFilter={setStatus}
         page={page}
         setPage={setPage}
-        limit={limit}
-        setLimit={setLimit}
       />
     </Box>
   );
