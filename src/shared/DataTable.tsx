@@ -16,6 +16,9 @@ import {
   TextField,
   Grid,
   Fab,
+  FormControl,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AddIcon from "@mui/icons-material/Add";
@@ -23,7 +26,6 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
-import SelectInputField from "../components/utils/input-fields/SelectInputField";
 
 interface RowData {
   _id: string;
@@ -67,6 +69,7 @@ const DataTable: React.FC<TableProps> = ({
   setSearch,
   search = "",
   setFilter,
+  filter = "",
   page = 1,
   options,
   setPage,
@@ -194,19 +197,28 @@ const DataTable: React.FC<TableProps> = ({
                     variant="outlined"
                     value={search}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setSearch(e.target.value)
+                      setSearch(e?.target?.value)
                     }
                   />
                 </Grid>
               )}
               {options && (
                 <Grid size={{ xs: 12, md: setSearch ? 6 : 12 }}>
-                  <SelectInputField
-                    label="Filter by status"
-                    name="status"
-                    options={options}
-                    onChange={(value: string) => setFilter?.(value)}
-                  />
+                  <FormControl fullWidth>
+                    <InputLabel>Filter by status</InputLabel>
+                    <Select
+                      value={filter || ""}
+                      label="Filter by status"
+                      onChange={(e) => setFilter?.(e.target.value)}
+                    >
+                      <MenuItem value="">All</MenuItem>
+                      {options.map((opt) => (
+                        <MenuItem key={opt} value={opt}>
+                          {opt}
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                 </Grid>
               )}
             </Grid>

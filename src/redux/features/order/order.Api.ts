@@ -4,7 +4,7 @@ import { baseApi } from "../../api/baseApi";
 const orderApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     allOrders: builder.query({
-      query: (queryParams: Record<string, any>) => {
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
         const queryString = new URLSearchParams(queryParams).toString();
         return {
           url: `/order/all-order?${queryString}`,

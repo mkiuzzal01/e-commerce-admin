@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box } from "@mui/material";
 import { useAllOrdersQuery } from "../../../redux/features/order/order.Api";
 import DataTable from "../../../shared/DataTable";
@@ -6,13 +7,20 @@ import { OrderColumn } from "./components/OrderColumn";
 import { useState } from "react";
 
 const AllOrder = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [status, setStatus] = useState("active");
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-  const { data, isLoading } = useAllOrdersQuery({});
+  const [filter, setFilter] = useState("");
 
-  console.log(data);
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+  if (search.trim()) queryParams.searchTerm = search.trim();
+  if (filter) queryParams.orderStatus = filter;
+
+  console.log(queryParams);
+
+  const { data, isLoading } = useAllOrdersQuery({ queryParams });
 
   if (isLoading) return <Loader />;
 
@@ -22,17 +30,27 @@ const AllOrder = () => {
         title="All Order"
         rows={data?.data?.result || []}
         columns={OrderColumn}
-        meta={data?.meta}
+        meta={data?.data?.meta}
         updatePath="/update-order"
         viewPath="/view-order"
-        search={searchTerm}
-        setSearch={setSearchTerm}
-        filter={status}
-        setFilter={setStatus}
+        search={search}
+        filter={filter}
+        setFilter={setFilter}
+        options={[
+          "PENDING",
+          "PROCESSING",
+          "READY_FOR_PICKUP",
+          "DISPATCHED", 
+          "OUT_FOR_DELIVERY",
+          "DELIVERED",
+          "DELIVERY_FAILED",
+          "RETURN_REQUESTED",
+          "RETURNED",
+          "CANCELLED",
+        ]}
+        setSearch={setSearch}
         page={page}
         setPage={setPage}
-        limit={limit}
-        setLimit={setLimit}
       />
     </Box>
   );
