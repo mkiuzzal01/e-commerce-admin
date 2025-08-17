@@ -129,11 +129,11 @@ const AllImage = ({
 
   return (
     <Box>
-      <Grid container spacing={2} sx={{ pt: 2 }}>
+      <Grid container spacing={1} sx={{ pt: 2 }}>
         {imagesData.map((item) => (
           <Grid
-            key={item._id}
-            size={{ xs: 6, md: 2 }}
+            key={item?._id}
+            size={{ xs: 4, md: 2 }}
             sx={{ cursor: "pointer" }}
           >
             <Paper

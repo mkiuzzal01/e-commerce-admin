@@ -24,7 +24,7 @@ export default function ViewCategories() {
   // Handle loader
   if (isLoading) return <Loader />;
 
-  console.log(data?.data);
+  // console.log(data?.data);
 
   return (
     <Container maxWidth="lg" sx={{ py: 4 }}>

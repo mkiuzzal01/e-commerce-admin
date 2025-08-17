@@ -3,12 +3,9 @@ import FormHeader from "../../utils/FormHeader";
 import ReusableForm from "../../../shared/ReusableFrom";
 import TextInput from "../../utils/input-fields/TextInput";
 
-type CreateFeedbackProps = {
-  Description: string;
-};
 const CreateFeedback = () => {
-  const onSubmit = (data: CreateFeedbackProps) => {
-    console.log(data);
+  const onSubmit = () => {
+    // console.log(data);
   };
   return (
     <Box>

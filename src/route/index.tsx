@@ -1,7 +1,6 @@
 import { createBrowserRouter } from "react-router-dom";
 import Overview from "../components/pages/overview/Overview";
 import Profile from "../components/pages/profile/Profile";
-import CreateUser from "../components/pages/users/CreateUser";
 import AllUsers from "../components/pages/users/AllUsers";
 import CreateVariant from "../components/pages/variant/CreateVariant";
 import AllVariant from "../components/pages/variant/AllVariant";
@@ -40,7 +39,6 @@ export const route = createBrowserRouter([
     children: [
       { path: "overview", Component: Overview },
       { path: "profile", Component: Profile },
-      { path: "create", Component: CreateUser },
       { path: "users", Component: AllUsers },
       { path: "view-user/:slug", Component: ViewUser },
       { path: "update-user/:slug", Component: UpdateUser },

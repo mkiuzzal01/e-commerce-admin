@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import {
   useAllVariantQuery,
@@ -8,14 +9,21 @@ import Loader from "../../../shared/Loader";
 import { useToast } from "../../utils/tost-alert/ToastProvider";
 import { showAlert } from "../../utils/tost-alert/showAlert";
 import { variantColumn } from "./components/Columns";
-
-
+import { Box } from "@mui/material";
 
 const AllVariant = () => {
-  const [search, setSearch] = useState<string>("");
-  const { data, isLoading, refetch } = useAllVariantQuery({});
-  const [deleteVariant] = useDeleteVariantMutation();
   const { showToast } = useToast();
+  const [page, setPage] = useState(1);
+  const [search, setSearch] = useState<string>("");
+  const [deleteVariant] = useDeleteVariantMutation();
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+  if (search.trim()) queryParams.searchTerm = search.trim();
+
+  const { data, isLoading, refetch } = useAllVariantQuery({queryParams});
 
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
@@ -28,7 +36,7 @@ const AllVariant = () => {
 
     if (!confirmed) return;
     try {
-      console.log(id);
+      // console.log(id);
       await deleteVariant(id).unwrap();
       refetch();
     } catch {
@@ -46,20 +54,23 @@ const AllVariant = () => {
   //handle loading:
   if (isLoading) return <Loader />;
   return (
-    <>
+    <Box>
       {" "}
       <DataTable
+        title="Product Variant"
         rows={data?.data?.result || []}
+        meta={data?.data?.meta}
         columns={variantColumn}
         onDelete={handleDelete}
-        title="Product Variant"
         search={search}
         setSearch={setSearch}
+        setPage={setPage}
+        page={page}
         createPath="/create-variant"
         updatePath="/update-variant"
         viewPath="/view-attributes"
       />
-    </>
+    </Box>
   );
 };
 

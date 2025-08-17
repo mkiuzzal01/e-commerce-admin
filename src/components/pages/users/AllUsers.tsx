@@ -70,13 +70,21 @@ const userColumns = [
   },
 ];
 
-const AllUsers = () => {
-  const [searchTerm, setSearchTerm] = useState("");
-  const [status, setStatus] = useState("active");
-  const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
+const options = ["in-progress", "blocked"];
 
-  const { data, isLoading } = useAllUsersQuery({});
+const AllUsers = () => {
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+  const [status, setStatus] = useState("");
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+  if (search.trim()) queryParams.searchTerm = search.trim();
+  if (status) queryParams.status = status;
+
+  const { data, isLoading } = useAllUsersQuery({ queryParams });
 
   if (isLoading) return <Loader />;
 
@@ -86,18 +94,14 @@ const AllUsers = () => {
         title="All Users"
         rows={data?.data?.result || []}
         columns={userColumns}
-        meta={data?.meta}
-        updatePath="/update-user"
-        createPath="/create-user"
+        meta={data?.data?.meta}
         viewPath="/view-user"
-        search={searchTerm}
-        setSearch={setSearchTerm}
+        options={options}
+        search={search}
+        setSearch={setSearch}
         filter={status}
         setFilter={setStatus}
-        page={page}
         setPage={setPage}
-        limit={limit}
-        setLimit={setLimit}
       />
     </Box>
   );

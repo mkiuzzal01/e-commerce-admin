@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { baseApi } from "../../api/baseApi";
 
 const variantApi = baseApi.injectEndpoints({
@@ -25,10 +26,13 @@ const variantApi = baseApi.injectEndpoints({
     }),
     //get all variant:
     allVariant: builder.query({
-      query: () => ({
-        url: "/variant/all-variant",
-        method: "GET",
-      }),
+      query: ({ queryParams = {} }: { queryParams?: Record<string, any> }) => {
+        const queryString = new URLSearchParams(queryParams).toString();
+        return {
+          url: `/variant/all-variant?${queryString}`,
+          method: "GET",
+        };
+      },
       providesTags: ["all-variant"],
     }),
     //get single variant:

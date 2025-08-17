@@ -56,4 +56,5 @@ export const {
   useAllOrdersQuery,
   useSingleOrderQuery,
   useAllOrderByKeyWordQuery,
+  useOrderStatusChangeMutation,
 } = orderApi;

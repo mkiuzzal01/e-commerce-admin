@@ -12,15 +12,12 @@ import {
 
 const AllAdvertisement = () => {
   const { showToast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
+  const [search, setSearch] = useState("");
   const [status, setStatus] = useState("active");
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
 
   const [deleteProduct] = useDeleteAdvertisementMutation();
-  const { data, isLoading, refetch } = useGetAllAdvertisementsQuery({
-    searchTerm,
-  });
+  const { data, isLoading, refetch } = useGetAllAdvertisementsQuery({});
 
   const handleDelete = async (id: string) => {
     const confirmed = await showAlert({
@@ -60,14 +57,12 @@ const AllAdvertisement = () => {
         updatePath="/update-advertisement"
         createPath="/create-advertisement"
         onDelete={handleDelete}
-        search={searchTerm}
-        setSearch={setSearchTerm}
+        search={search}
+        setSearch={setSearch}
         filter={status}
         setFilter={setStatus}
         page={page}
         setPage={setPage}
-        limit={limit}
-        setLimit={setLimit}
       />
     </Box>
   );

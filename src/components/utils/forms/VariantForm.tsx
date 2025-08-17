@@ -86,7 +86,7 @@ const VariantForm = ({ initialData }: Props) => {
               <TextInput
                 name="name"
                 label="Variant Name"
-                placeholder="e.g. Color, Size"
+                placeholder="e.g. Size"
                 required
               />
             </Grid>
@@ -98,7 +98,7 @@ const VariantForm = ({ initialData }: Props) => {
                     <TextInput
                       name={`attributes[${idx}].value`}
                       label="Value"
-                      placeholder="e.g. Red, Large, Cotton"
+                      placeholder="e.g. Color"
                       required
                     />
                   </Grid>

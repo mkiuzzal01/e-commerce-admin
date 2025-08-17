@@ -40,7 +40,7 @@ const AllProduct = () => {
 
     if (!confirmed) return;
     try {
-      console.log(id);
+      // console.log(id);
       await deleteProduct(id).unwrap();
       refetch();
     } catch {

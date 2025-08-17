@@ -3,13 +3,11 @@ import {
   FaArrowTrendUp,
   FaList,
   FaPaypal,
-  FaPerson,
   FaPlus,
   FaUserGroup,
   FaFolderOpen,
 } from "react-icons/fa6";
-import { IoIosNotifications } from "react-icons/io";
-import { MdCategory, MdFeedback } from "react-icons/md";
+import { MdCategory } from "react-icons/md";
 import { RiGalleryFill } from "react-icons/ri";
 
 export const navigation = [
@@ -18,18 +16,15 @@ export const navigation = [
     icon: <FaArrowTrendUp size={20} />,
     children: [{ segment: "overview", icon: <FaArrowTrendUp size={20} /> }],
   },
-  {
-    title: "Profile",
-    icon: <FaPerson size={20} />,
-    children: [{ segment: "profile", icon: <FaPerson size={20} /> }],
-  },
+  // {
+  //   title: "Profile",
+  //   icon: <FaPerson size={20} />,
+  //   children: [{ segment: "profile", icon: <FaPerson size={20} /> }],
+  // },
   {
     title: "User",
     icon: <FaUserGroup size={20} />,
-    children: [
-      { segment: "Create", icon: <FaPlus size={20} /> },
-      { segment: "Users", icon: <FaUserGroup size={20} /> },
-    ],
+    children: [{ segment: "Users", icon: <FaUserGroup size={20} /> }],
   },
   {
     title: "Category",
@@ -54,30 +49,28 @@ export const navigation = [
     icon: <FaPaypal size={20} />,
     children: [{ segment: "all-order", icon: <FaList size={20} /> }],
   },
-  {
-    title: "Advertisement",
-    icon: <IoIosNotifications size={20} />,
-    children: [
-      { segment: "create-advertisement", icon: <FaPlus size={20} /> },
-      { segment: "all-advertisement", icon: <IoIosNotifications size={20} /> },
-    ],
-  },
+  // {
+  //   title: "Advertisement",
+  //   icon: <IoIosNotifications size={20} />,
+  //   children: [
+  //     { segment: "create-advertisement", icon: <FaPlus size={20} /> },
+  //     { segment: "all-advertisement", icon: <IoIosNotifications size={20} /> },
+  //   ],
+  // },
   {
     title: "Banner content",
     icon: <Text size={20} />,
     children: [
       { segment: "create-content", icon: <FaPlus size={20} /> },
-      { segment: "all-content", icon: <IoIosNotifications size={20} /> },
+      { segment: "all-content", icon: <Text size={20} /> },
     ],
   },
 
-  {
-    title: "Client Feedback",
-    icon: <MdFeedback size={20} />,
-    children: [
-      { segment: "all-feedback", icon: <MdFeedback size={20} /> },
-    ],
-  },
+  // {
+  //   title: "Client Feedback",
+  //   icon: <MdFeedback size={20} />,
+  //   children: [{ segment: "all-feedback", icon: <MdFeedback size={20} /> }],
+  // },
   {
     title: "Gallery",
     icon: <RiGalleryFill size={20} />,

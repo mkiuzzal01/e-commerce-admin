@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useState } from "react";
 import Loader from "../../../shared/Loader";
 import { Box } from "@mui/material";
@@ -12,14 +13,19 @@ import {
 
 const AllBannerContent = () => {
   const { showToast } = useToast();
-  const [searchTerm, setSearchTerm] = useState("");
-  const [status, setStatus] = useState("active");
+  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
-  const [limit, setLimit] = useState(10);
-
   const [deleteContent] = useDeleteBannerContentMutation();
+
+  const queryParams: Record<string, any> = {
+    page,
+    limit: 10,
+  };
+
+  if (search.trim()) queryParams.searchTerm = search.trim();
+
   const { data, isLoading, refetch } = useGetAllBannerContentsQuery({
-    searchTerm,
+    queryParams,
   });
 
   const handleDelete = async (id: string) => {
@@ -56,18 +62,14 @@ const AllBannerContent = () => {
         title="All Content"
         rows={data?.data?.result || []}
         columns={bannerContentColumn}
-        meta={data?.meta}
+        meta={data?.data?.meta}
         updatePath="/update-content"
         createPath="/create-content"
         onDelete={handleDelete}
-        search={searchTerm}
-        setSearch={setSearchTerm}
-        filter={status}
-        setFilter={setStatus}
+        search={search}
+        setSearch={setSearch}
         page={page}
         setPage={setPage}
-        limit={limit}
-        setLimit={setLimit}
       />
     </Box>
   );

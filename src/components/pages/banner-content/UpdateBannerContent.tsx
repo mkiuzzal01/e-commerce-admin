@@ -7,7 +7,7 @@ import { useGetSingleBannerContentQuery } from "../../../redux/features/banner-c
 export default function UpdateBannerContent() {
   const { slug } = useParams();
   const { data, isLoading } = useGetSingleBannerContentQuery(slug ? slug : "");
-  console.log(data);
+  // console.log(data);
   if (isLoading) return <Loader />;
   return (
     <Box>

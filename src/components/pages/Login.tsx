@@ -47,9 +47,9 @@ const Login = () => {
     }
   };
   return (
-    <div className="flex flex-col items-center justify-center h-screen bg-gray-100">
+    <div className="flex flex-col items-center justify-center h-screen bg-gray-200">
       <h1 className="text-2xl font-bold mb-4">
-        Login with Export<span className="text-yellow-400">corner</span>
+        Login with Export <span className="text-orange-400">corner</span>
       </h1>
 
       <div className="w-80 bg-white p-6 rounded shadow">
@@ -86,10 +86,10 @@ const Login = () => {
             sx={{
               width: "100%",
               marginTop: "8px",
-              backgroundColor: "#1E40AF",
+              backgroundColor: "#FFA500",
               boxShadow: "none",
               "&:hover": {
-                backgroundColor: "#1D4ED8",
+                backgroundColor: "#EF5350",
               },
             }}
           >

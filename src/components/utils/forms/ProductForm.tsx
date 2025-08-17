@@ -98,7 +98,7 @@ const ProductForm = ({ initialData }: Pros) => {
   const onSubmit = async (values: FieldValues) => {
     try {
       if (!selectedId) {
-        console.log(selectedId);
+        // console.log(selectedId);
         return showToast({
           message: "Please select a main product image",
           type: "error",

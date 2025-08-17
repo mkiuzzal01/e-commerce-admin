@@ -35,7 +35,7 @@ export default function UpdateUsers() {
 
   //submit the updated data
   const onSubmit = async (value: FieldValue<any>) => {
-    console.log(value);
+    // console.log(value);
     try {
       const updatedData = {
         id: singleUser?.data?._id,

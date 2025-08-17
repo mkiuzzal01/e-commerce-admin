@@ -6,6 +6,19 @@ import Loader from "../../../shared/Loader";
 import { OrderColumn } from "./components/OrderColumn";
 import { useState } from "react";
 
+const statusOptions = [
+  "PENDING",
+  "PROCESSING",
+  "READY_FOR_PICKUP",
+  "DISPATCHED",
+  "OUT_FOR_DELIVERY",
+  "DELIVERED",
+  "DELIVERY_FAILED",
+  "RETURN_REQUESTED",
+  "RETURNED",
+  "CANCELLED",
+];
+
 const AllOrder = () => {
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -17,8 +30,6 @@ const AllOrder = () => {
   };
   if (search.trim()) queryParams.searchTerm = search.trim();
   if (filter) queryParams.orderStatus = filter;
-
-  console.log(queryParams);
 
   const { data, isLoading } = useAllOrdersQuery({ queryParams });
 
@@ -36,18 +47,7 @@ const AllOrder = () => {
         search={search}
         filter={filter}
         setFilter={setFilter}
-        options={[
-          "PENDING",
-          "PROCESSING",
-          "READY_FOR_PICKUP",
-          "DISPATCHED", 
-          "OUT_FOR_DELIVERY",
-          "DELIVERED",
-          "DELIVERY_FAILED",
-          "RETURN_REQUESTED",
-          "RETURNED",
-          "CANCELLED",
-        ]}
+        options={statusOptions}
         setSearch={setSearch}
         page={page}
         setPage={setPage}

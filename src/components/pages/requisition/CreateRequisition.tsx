@@ -4,16 +4,9 @@ import ReusableForm from "../../../shared/ReusableFrom";
 import TextInput from "../../utils/input-fields/TextInput";
 import SelectInputField from "../../utils/input-fields/SelectInputField";
 
-type CreateRequisitionProps = {
-  title: string;
-  subTitle: string;
-  type: string;
-  description: string;
-};
-
 const CreateRequisition = () => {
-  const onSubmit = (data: CreateRequisitionProps) => {
-    console.log(data);
+  const onSubmit = () => {
+    // console.log(data);
   };
   return (
     <Box>
