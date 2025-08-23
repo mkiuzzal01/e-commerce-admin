@@ -45,7 +45,7 @@ import { CategorySelector } from "./components/CategorySelector";
 import { useToast } from "../tost-alert/ToastProvider";
 
 const statusOptions = ["in-stock", "out-stock", "low-stock", "pre-order"];
-const productPlace = ["not-now", "trending", "flash-sale", "new-arrivals"];
+const productPlace = ["not-now", "trending", "flash-sale", "new-arrival"];
 const activityOptions = [
   "market-launch",
   "not-now",

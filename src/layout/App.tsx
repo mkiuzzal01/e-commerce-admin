@@ -10,7 +10,7 @@ import {
 } from "@mui/material";
 import ProtectedRoute from "../route/protectedRoute";
 import User from "./components/User";
-import Notification from "./components/Notification";
+// import Notification from "./components/Notification";
 import { navigation } from "./navigation";
 import logo from "../assets/logo.png";
 
@@ -37,7 +37,7 @@ const brand = {
 const ToolbarActionsSearch = () => (
   <Stack direction="row" alignItems="center" spacing={1}>
     <ThemeSwitcher />
-    <Notification />
+    {/* <Notification /> */}
   </Stack>
 );
 

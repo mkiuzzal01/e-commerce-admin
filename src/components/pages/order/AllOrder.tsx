@@ -20,7 +20,6 @@ const statusOptions = [
 ];
 
 const AllOrder = () => {
-  const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState("");
 
@@ -28,7 +27,6 @@ const AllOrder = () => {
     page,
     limit: 10,
   };
-  if (search.trim()) queryParams.searchTerm = search.trim();
   if (filter) queryParams.orderStatus = filter;
 
   const { data, isLoading } = useAllOrdersQuery({ queryParams });
@@ -44,11 +42,9 @@ const AllOrder = () => {
         meta={data?.data?.meta}
         updatePath="/update-order"
         viewPath="/view-order"
-        search={search}
         filter={filter}
         setFilter={setFilter}
         options={statusOptions}
-        setSearch={setSearch}
         page={page}
         setPage={setPage}
       />

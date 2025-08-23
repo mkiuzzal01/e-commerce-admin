@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Button, Grid, Paper } from "@mui/material";
 import ReusableForm from "../../../shared/ReusableFrom";
 import SelectInputField from "../../utils/input-fields/SelectInputField";
@@ -38,6 +39,8 @@ export default function UpdateOrder() {
         id: order?.data?._id,
         orderStatus: value?.orderStatus,
       });
+    
+
       if (data?.success) {
         showToast({
           message: "Order status updated successfully",
@@ -45,9 +48,10 @@ export default function UpdateOrder() {
         });
         navigate("/all-order");
       }
-    } catch {
+    } catch (error: any) {
+      console.log(error);
       showToast({
-        message: "Failed to update order status",
+        message: error?.data?.message || "Failed to update order status",
         type: "error",
       });
     }

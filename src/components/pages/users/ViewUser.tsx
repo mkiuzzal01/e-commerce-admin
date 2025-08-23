@@ -189,16 +189,17 @@ export default function ViewUser() {
                       size="small"
                     />
                     <Chip
-                      icon={getRoleIcon(user.role)}
+                      icon={getRoleIcon(user?.role)}
                       label={
-                        user?.role?.charAt(0)?.toUpperCase() + user?.role?.slice(1)
+                        user?.role?.charAt(0)?.toUpperCase() +
+                        user?.role?.slice(1)
                       }
-                      color={getRoleColor(user.role)}
+                      color={getRoleColor(user?.role)}
                       variant="outlined"
                       size="small"
                     />
                     <Chip
-                      icon={getGenderIcon(user.gender)}
+                      icon={getGenderIcon(user?.gender)}
                       label={
                         user?.gender?.charAt(0)?.toUpperCase() +
                         user?.gender?.slice(1)

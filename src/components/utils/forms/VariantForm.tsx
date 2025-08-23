@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Box, Grid, IconButton, Paper, Button } from "@mui/material";
 import { Add, Delete } from "@mui/icons-material";
 import TextInput from "../../utils/input-fields/TextInput";
@@ -52,7 +53,7 @@ const VariantForm = ({ initialData }: Props) => {
 
     try {
       const res = initialData
-        ? await updateVariant({ id: initialData._id, ...formPayload }).unwrap()
+        ? await updateVariant({ id: initialData?._id, ...formPayload }).unwrap()
         : await createVariant(formPayload).unwrap();
 
       showToast({
@@ -94,7 +95,7 @@ const VariantForm = ({ initialData }: Props) => {
             <Grid size={{ xs: 12 }}>
               {attributes.map((_, idx) => (
                 <Grid key={idx} container spacing={2} alignItems="center">
-                  <Grid size={{ xs: 10 }}>
+                  <Grid size={{ xs: 10 }} mt={2}>
                     <TextInput
                       name={`attributes[${idx}].value`}
                       label="Value"

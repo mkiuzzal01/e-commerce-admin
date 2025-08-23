@@ -12,9 +12,6 @@ import {
   CardMedia,
   Chip,
   Divider,
-  List,
-  ListItem,
-  ListItemText,
   Alert,
   Container,
   Stack,
@@ -37,9 +34,9 @@ import {
 
 export default function ViewOrder() {
   const { slug } = useParams();
-  const { data, isLoading, } = useSingleOrderQuery(slug ? slug : "");
+  const { data, isLoading } = useSingleOrderQuery(slug ? slug : "");
 
-  if (isLoading) return <Loader />
+  if (isLoading) return <Loader />;
 
   if (!data || !data.success) {
     return (
@@ -54,10 +51,8 @@ export default function ViewOrder() {
     );
   }
 
-  const order = data.data;
-  const customer = order.customerId;
-  const orderItem = order.orderItems[0];
-  const product = orderItem.productId;
+  const order = data?.data;
+  const customer = order?.customerId;
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -86,11 +81,12 @@ export default function ViewOrder() {
     }
   };
 
-  const subtotal = order.orderItems.reduce(
-    (total: number, item: any) => total + item.productId.price * item.quantity,
+  const subtotal = order?.orderItems?.reduce(
+    (total: number, item: any) =>
+      total + item?.productId?.price * item?.quantity,
     0
   );
-  const discount = subtotal - order.totalPrice;
+  const discount = subtotal - order?.totalPrice;
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -109,13 +105,10 @@ export default function ViewOrder() {
               <Typography variant="h5" component="h1" gutterBottom>
                 Order Details
               </Typography>
-              <Typography variant="body2" color="text.secondary">
-                Order ID: {order._id}
-              </Typography>
             </Box>
             <Chip
-              label={order.orderStatus}
-              color={getStatusColor(order.orderStatus)}
+              label={order?.orderStatus}
+              color={getStatusColor(order?.orderStatus)}
               variant="filled"
               size="medium"
             />
@@ -130,7 +123,7 @@ export default function ViewOrder() {
                     Order Date
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {formatDate(order.createdAt)}
+                    {formatDate(order?.createdAt as string)}
                   </Typography>
                 </Box>
               </Box>
@@ -143,7 +136,7 @@ export default function ViewOrder() {
                     Last Updated
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {formatDate(order.updatedAt)}
+                    {formatDate(order?.updatedAt)}
                   </Typography>
                 </Box>
               </Box>
@@ -173,17 +166,17 @@ export default function ViewOrder() {
                     <Avatar
                       sx={{ width: 32, height: 32, bgcolor: "primary.main" }}
                     >
-                      {customer.name.firstName.charAt(0)}
+                      {customer?.name?.firstName?.charAt(0)}
                     </Avatar>
                     <Box>
                       <Typography variant="body2" color="text.secondary">
                         Name
                       </Typography>
                       <Typography variant="body1" fontWeight="medium">
-                        {customer.name.firstName}{" "}
-                        {customer.name.middleName &&
-                          customer.name.middleName + " "}
-                        {customer.name.lastName}
+                        {customer?.name?.firstName}{" "}
+                        {customer?.name?.middleName &&
+                          customer?.name?.middleName + " "}
+                        {customer?.name?.lastName}
                       </Typography>
                     </Box>
                   </Box>
@@ -197,7 +190,7 @@ export default function ViewOrder() {
                         Email
                       </Typography>
                       <Typography variant="body1" fontWeight="medium">
-                        {customer.email}
+                        {customer?.email}
                       </Typography>
                     </Box>
                   </Box>
@@ -211,7 +204,7 @@ export default function ViewOrder() {
                         Phone
                       </Typography>
                       <Typography variant="body1" fontWeight="medium">
-                        {customer.phone}
+                        {customer?.phone}
                       </Typography>
                     </Box>
                   </Box>
@@ -242,7 +235,7 @@ export default function ViewOrder() {
                     Present Address
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {order.deliveryAddress.presentAddress}
+                    {order?.deliveryAddress?.presentAddress}
                   </Typography>
                 </Grid>
                 <Grid size={{ xs: 12, md: 6 }}>
@@ -254,7 +247,7 @@ export default function ViewOrder() {
                     Permanent Address
                   </Typography>
                   <Typography variant="body1" fontWeight="medium">
-                    {order.deliveryAddress.permanentAddress}
+                    {order?.deliveryAddress?.permanentAddress}
                   </Typography>
                 </Grid>
               </Grid>
@@ -273,11 +266,11 @@ export default function ViewOrder() {
                 </Typography>
               </Box>
 
-              {order.orderItems.map((item: any, index: number) => (
+              {order?.orderItems.map((item: any, index: number) => (
                 <Card
                   key={index}
                   variant="outlined"
-                  sx={{ mb: index < order.orderItems.length - 1 ? 2 : 0 }}
+                  sx={{ mb: index < order?.orderItems?.length - 1 ? 2 : 0 }}
                 >
                   <CardContent>
                     <Grid container spacing={2} alignItems="center">
@@ -289,7 +282,7 @@ export default function ViewOrder() {
                             item?.productId?.productImage?.photo?.url ||
                             "https://via.placeholder.com/80x80?text=No+Image"
                           }
-                          alt={item.productId.title}
+                          alt={item?.productId?.title}
                           sx={{
                             borderRadius: 1,
                             objectFit: "cover",
@@ -301,21 +294,21 @@ export default function ViewOrder() {
 
                       <Grid size={{ xs: 12, md: 7 }}>
                         <Typography variant="h6" component="h3" gutterBottom>
-                          {item.productId.title}
+                          {item?.productId?.title}
                         </Typography>
                         <Stack direction="row" spacing={2} flexWrap="wrap">
                           <Chip
-                            label={`Color: ${item.color}`}
+                            label={`Color: ${item?.color}`}
                             size="small"
                             variant="outlined"
                           />
                           <Chip
-                            label={`Size: ${item.size.toUpperCase()}`}
+                            label={`Size: ${item?.size.toUpperCase()}`}
                             size="small"
                             variant="outlined"
                           />
                           <Chip
-                            label={`Qty: ${item.quantity}`}
+                            label={`Qty: ${item?.quantity}`}
                             size="small"
                             variant="outlined"
                           />
@@ -328,7 +321,7 @@ export default function ViewOrder() {
                           color="primary"
                           fontWeight="bold"
                         >
-                          ${item.productId.price}
+                          ${item?.productId?.price}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -400,52 +393,9 @@ export default function ViewOrder() {
                   Total
                 </Typography>
                 <Typography variant="h5" fontWeight="bold" color="primary">
-                  ${order.totalPrice}
+                  ${order?.totalPrice}
                 </Typography>
               </Box>
-
-              {/* Product Variants Info */}
-              {product.variants && product.variants.length > 0 && (
-                <Box sx={{ mt: 3 }}>
-                  <Divider sx={{ mb: 2 }} />
-                  <Typography
-                    variant="subtitle1"
-                    fontWeight="medium"
-                    gutterBottom
-                  >
-                    Available Variants
-                  </Typography>
-                  <List dense>
-                    {product.variants.map((variant: any, index: number) => (
-                      <ListItem key={index} disableGutters>
-                        <ListItemText
-                          primary={
-                            <Box
-                              sx={{
-                                display: "flex",
-                                justifyContent: "space-between",
-                              }}
-                            >
-                              <Typography
-                                variant="body2"
-                                sx={{ textTransform: "capitalize" }}
-                              >
-                                {variant.name}
-                              </Typography>
-                              <Typography
-                                variant="body2"
-                                color="text.secondary"
-                              >
-                                {variant.attributes?.length || 0} attributes
-                              </Typography>
-                            </Box>
-                          }
-                        />
-                      </ListItem>
-                    ))}
-                  </List>
-                </Box>
-              )}
             </Box>
           </Paper>
         </Grid>
