@@ -5,6 +5,7 @@ import DataTable from "../../../shared/DataTable";
 import Loader from "../../../shared/Loader";
 import { OrderColumn } from "./components/OrderColumn";
 import { useState } from "react";
+import UpdateOrder from "./UpdateOrder";
 
 const statusOptions = [
   "PENDING",
@@ -22,31 +23,48 @@ const statusOptions = [
 const AllOrder = () => {
   const [page, setPage] = useState(1);
   const [filter, setFilter] = useState("");
+  const [modalOpen, setModalOpen] = useState(false);
+  const [selectedOrderSlug, setSelectedOrderSlug] = useState<string>();
 
-  const queryParams: Record<string, any> = {
-    page,
-    limit: 10,
-  };
+  const queryParams: Record<string, any> = { page, limit: 10 };
   if (filter) queryParams.orderStatus = filter;
 
-  const { data, isLoading } = useAllOrdersQuery({ queryParams });
+  const { data, isLoading, refetch } = useAllOrdersQuery({ queryParams });
+
+  const handleOpenModal = (slug: string) => {
+    setSelectedOrderSlug(slug);
+    setModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+  };
 
   if (isLoading) return <Loader />;
 
   return (
     <Box p={3}>
       <DataTable
-        title="All Order"
+        title="All Orders"
         rows={data?.data?.result || []}
         columns={OrderColumn}
         meta={data?.data?.meta}
-        updatePath="/update-order"
         viewPath="/view-order"
         filter={filter}
         setFilter={setFilter}
         options={statusOptions}
         page={page}
         setPage={setPage}
+        modalOpen={modalOpen}
+        modalClose={handleCloseModal}
+        children={
+          <UpdateOrder
+            slug={selectedOrderSlug}
+            refetch={refetch}
+            handleOpenModal={setModalOpen}
+          />
+        }
+        onUpdateStatus={handleOpenModal}
       />
     </Box>
   );

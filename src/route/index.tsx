@@ -31,7 +31,6 @@ import AllBannerContent from "../components/pages/banner-content/AllBannerConten
 import UpdateBannerContent from "../components/pages/banner-content/UpdateBannerContent";
 import ViewOrder from "../components/pages/order/ViewOrder";
 import AllOrder from "../components/pages/order/AllOrder";
-import UpdateOrder from "../components/pages/order/UpdateOrder";
 export const route = createBrowserRouter([
   {
     Component: App,
@@ -57,7 +56,6 @@ export const route = createBrowserRouter([
       { path: "all-category", Component: AllCategory },
       { path: "all-order", Component: AllOrder },
       { path: "view-order/:slug", Component: ViewOrder },
-      { path: "update-order/:slug", Component: UpdateOrder },
       { path: "create-advertisement", Component: CreateAdvertisement },
       { path: "all-advertisement", Component: AllAdvertisement },
       { path: "update-advertisement/:slug", Component: UpdateAdvertisement },

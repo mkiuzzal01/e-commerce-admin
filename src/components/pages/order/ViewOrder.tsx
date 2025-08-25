@@ -86,7 +86,6 @@ export default function ViewOrder() {
       total + item?.productId?.price * item?.quantity,
     0
   );
-  const discount = subtotal - order?.totalPrice;
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
@@ -321,7 +320,7 @@ export default function ViewOrder() {
                           color="primary"
                           fontWeight="bold"
                         >
-                          ${item?.productId?.price}
+                          ৳ {item?.productId?.price}
                         </Typography>
                       </Grid>
                     </Grid>
@@ -353,26 +352,7 @@ export default function ViewOrder() {
                       </TableCell>
                       <TableCell align="right" sx={{ border: "none", pr: 0 }}>
                         <Typography variant="body1" fontWeight="medium">
-                          ${subtotal}
-                        </Typography>
-                      </TableCell>
-                    </TableRow>
-
-                    <TableRow>
-                      <TableCell
-                        component="th"
-                        scope="row"
-                        sx={{ border: "none", pl: 0 }}
-                      >
-                        <Typography variant="body1">Discount</Typography>
-                      </TableCell>
-                      <TableCell align="right" sx={{ border: "none", pr: 0 }}>
-                        <Typography
-                          variant="body1"
-                          fontWeight="medium"
-                          color="success.main"
-                        >
-                          -${discount}
+                          ৳ {subtotal}
                         </Typography>
                       </TableCell>
                     </TableRow>
@@ -393,7 +373,7 @@ export default function ViewOrder() {
                   Total
                 </Typography>
                 <Typography variant="h5" fontWeight="bold" color="primary">
-                  ${order?.totalPrice}
+                  ৳ {order?.totalPrice}
                 </Typography>
               </Box>
             </Box>

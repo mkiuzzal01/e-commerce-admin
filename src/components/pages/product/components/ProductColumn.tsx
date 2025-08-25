@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Avatar, Fab } from "@mui/material";
 
 export const ProductColumn = [
@@ -14,8 +15,8 @@ export const ProductColumn = [
     ),
   },
   { field: "title", headerName: "Title", width: 200 },
-  { field: "price", headerName: "Price", width: 150 },
-  { field: "discount", headerName: "Discount", width: 120 },
+  { field: "price", headerName: "৳ Price", width: 150 },
+  { field: "discount", headerName: "৳ Discount", width: 120 },
   { field: "isDeleted", headerName: "Is Deleted", width: 120 },
 
   {

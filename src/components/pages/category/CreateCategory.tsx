@@ -76,6 +76,12 @@ const CreateCategory = () => {
     })) || [];
 
   const onSubmitMainCategory = async (data: FieldValue<any>) => {
+    if (!selectedId) {
+      return showToast({
+        message: "Please select image",
+        type: "error",
+      });
+    }
     try {
       const payload = {
         name: data?.mainCategory?.value,
@@ -153,7 +159,6 @@ const CreateCategory = () => {
       });
     }
   };
-
 
   if (subLoading || mainLoading || categoryLoading) return <Loader />;
 

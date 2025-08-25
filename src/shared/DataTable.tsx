@@ -26,6 +26,8 @@ import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import RemoveRedEyeIcon from "@mui/icons-material/RemoveRedEye";
+import UpdateIcon from "@mui/icons-material/Update";
+import ReusableModal from "./ReusableModal";
 
 interface RowData {
   _id: string;
@@ -48,6 +50,7 @@ interface TableProps {
   viewPath?: string;
   createPath?: string;
   onDelete?: (id: string) => void;
+  onUpdateStatus?: (id: string) => void;
   setSearch?: (value: string) => void;
   search?: string;
   setFilter?: (value: string) => void;
@@ -56,6 +59,12 @@ interface TableProps {
   page?: number;
   setPage?: (value: number) => void;
   meta?: Meta;
+
+  // Modal
+  modalOpen?: boolean;
+  modalClose?: () => void;
+  modalTitle?: string;
+  children?: React.ReactNode;
 }
 
 const DataTable: React.FC<TableProps> = ({
@@ -66,6 +75,7 @@ const DataTable: React.FC<TableProps> = ({
   viewPath,
   createPath,
   onDelete,
+  onUpdateStatus,
   setSearch,
   search = "",
   setFilter,
@@ -74,6 +84,10 @@ const DataTable: React.FC<TableProps> = ({
   options,
   setPage,
   meta,
+  modalTitle,
+  modalOpen = false,
+  modalClose,
+  children,
 }) => {
   const navigate = useNavigate();
   const [menuAnchor, setMenuAnchor] = useState<null | HTMLElement>(null);
@@ -96,7 +110,7 @@ const DataTable: React.FC<TableProps> = ({
   const actionColumn: GridColDef = {
     field: "actions",
     headerName: "Actions",
-    width: 100,
+    width: 120,
     sortable: false,
     filterable: false,
     renderCell: (params: GridRenderCellParams<any, RowData>) => (
@@ -136,6 +150,17 @@ const DataTable: React.FC<TableProps> = ({
               sx={{ color: "primary.main" }}
             >
               <EditIcon fontSize="small" sx={{ mr: 1 }} /> Edit
+            </MenuItem>
+          )}
+          {onUpdateStatus && (
+            <MenuItem
+              onClick={() => {
+                onUpdateStatus(params?.row?.slug);
+                handleMenuClose();
+              }}
+              sx={{ color: "info.main" }}
+            >
+              <UpdateIcon fontSize="small" sx={{ mr: 1 }} /> Update Status
             </MenuItem>
           )}
           {onDelete && (
@@ -197,7 +222,7 @@ const DataTable: React.FC<TableProps> = ({
                     variant="outlined"
                     value={search}
                     onChange={(e: ChangeEvent<HTMLInputElement>) =>
-                      setSearch(e?.target?.value)
+                      setSearch(e.target.value)
                     }
                   />
                 </Grid>
@@ -241,6 +266,13 @@ const DataTable: React.FC<TableProps> = ({
         }}
         onPaginationModelChange={handlePaginationChange}
       />
+
+      {/* Modal */}
+      {modalOpen && modalClose && (
+        <ReusableModal title={modalTitle} onClose={modalClose} open={modalOpen}>
+          {children}
+        </ReusableModal>
+      )}
     </Box>
   );
 };
