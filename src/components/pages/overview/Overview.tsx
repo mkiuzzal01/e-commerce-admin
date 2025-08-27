@@ -19,10 +19,10 @@ import {
 import {
   Users,
   ShoppingCart,
-  DollarSign,
   MoreHorizontal,
   Package,
   Star,
+  HandCoins,
 } from "lucide-react";
 import {
   AreaChart,
@@ -96,9 +96,9 @@ const DashboardOverview: React.FC = () => {
     )?.count || 0;
 
   // Format revenue as currency
-  const formattedRevenue = new Intl.NumberFormat("en-US", {
+  const formattedRevenue = new Intl.NumberFormat("en-BD", {
     style: "currency",
-    currency: "USD",
+    currency: "BDT",
     minimumFractionDigits: 0,
   }).format(totalRevenue);
 
@@ -180,7 +180,7 @@ const DashboardOverview: React.FC = () => {
             value={formattedRevenue}
             change="+12.5%"
             trend="up"
-            icon={<DollarSign />}
+            icon={<HandCoins />}
             color="#1976d2"
           />
         </Grid>
@@ -245,7 +245,7 @@ const DashboardOverview: React.FC = () => {
                 <Bar
                   yAxisId="left"
                   dataKey="sales"
-                  name="Sales ($)"
+                  name="Sales (৳)"
                   fill="#8884d8"
                 />
                 <Bar
@@ -406,7 +406,7 @@ const DashboardOverview: React.FC = () => {
               <Chip label="Live" color="success" size="small" />
             </Box>
             <List>
-              {userData?.recentUsers
+              {userData?.data?.recentUsers
                 ?.slice(0, 5)
                 .map((user: RecentUser, index: number) => (
                   <Box key={user._id}>

@@ -22,7 +22,7 @@ export const StatCard: React.FC<StatCardProps> = ({
           <Typography color="textSecondary" gutterBottom variant="body2">
             {title}
           </Typography>
-          <Typography variant="h4" component="h2" fontWeight="bold">
+          <Typography variant="h6" component="h2" fontWeight="bold">
             {value}
           </Typography>
           <Box display="flex" alignItems="center" mt={1}>
@@ -35,8 +35,8 @@ export const StatCard: React.FC<StatCardProps> = ({
               />
             ) : (
               <ChevronDown
-                width={16}
-                height={16}
+                width={10}
+                height={10}
                 color="#d32f2f"
                 style={{ marginRight: 4 }}
               />
