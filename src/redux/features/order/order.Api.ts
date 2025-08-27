@@ -42,6 +42,14 @@ const orderApi = baseApi.injectEndpoints({
       }),
       providesTags: ["single-order"],
     }),
+
+    orderStats: builder.query({
+      query: () => ({
+        url: `/order/order-stats`,
+        method: "GET",
+      }),
+      providesTags: ["order-stats"],
+    }),
     orderStatusChange: builder.mutation({
       query: ({ id, orderStatus }) => ({
         url: `/order/change-status/${id}`,
@@ -55,6 +63,7 @@ const orderApi = baseApi.injectEndpoints({
 export const {
   useAllOrdersQuery,
   useSingleOrderQuery,
+  useOrderStatsQuery,
   useAllOrderByKeyWordQuery,
   useOrderStatusChangeMutation,
 } = orderApi;

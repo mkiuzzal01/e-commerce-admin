@@ -1,25 +1,28 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from "react";
 import {
   Box,
   Container,
   Paper,
   Typography,
-  Card,
-  CardContent,
   Avatar,
   Chip,
   LinearProgress,
   IconButton,
+  Grid,
+  List,
+  ListItem,
+  ListItemAvatar,
+  ListItemText,
+  Divider,
 } from "@mui/material";
-import Grid from "@mui/material/Grid";
 import {
   Users,
   ShoppingCart,
   DollarSign,
   MoreHorizontal,
-  ChevronUp,
-  ChevronDown,
-  Activity,
+  Package,
+  Star,
 } from "lucide-react";
 import {
   AreaChart,
@@ -32,85 +35,138 @@ import {
   PieChart,
   Pie,
   Cell,
+  BarChart,
+  Bar,
+  Legend,
 } from "recharts";
+import { useOrderStatsQuery } from "../../../redux/features/order/order.Api";
+import { useProductByStatsQuery } from "../../../redux/features/product/product.api";
+import { useUserStatsQuery } from "../../../redux/features/user/user-api";
+import Loader from "../../../shared/Loader";
+import type {
+  OrderStatus,
+  RecentUser,
+  SalesOverTime,
+  TopProduct,
+  UserGrowth,
+} from "./components/TOverview";
+import { StatCard } from "./components/StatCard";
 
-// Sample data
-const salesData = [
-  { name: "Jan", value: 4000, orders: 240 },
-  { name: "Feb", value: 3000, orders: 198 },
-  { name: "Mar", value: 5000, orders: 300 },
-  { name: "Apr", value: 4500, orders: 278 },
-  { name: "May", value: 6000, orders: 350 },
-  { name: "Jun", value: 5500, orders: 325 },
-];
+const DashboardOverview: React.FC = () => {
+  // API calls
+  const { data: orderData, isLoading: orderLoading } = useOrderStatsQuery({});
+  const { data: productData, isLoading: productLoading } =
+    useProductByStatsQuery({});
+  const { data: userData, isLoading: userLoading } = useUserStatsQuery({});
 
-const pieData = [
-  { name: "Desktop", value: 45, color: "#8884d8" },
-  { name: "Mobile", value: 35, color: "#82ca9d" },
-  { name: "Tablet", value: 20, color: "#ffc658" },
-];
+  // Show loader if any data is still loading
+  if (orderLoading || productLoading || userLoading) return <Loader />;
 
-const StatCard: React.FC<{
-  title: string;
-  value: string;
-  change: string;
-  trend: "up" | "down";
-  icon: React.ReactNode;
-  color: string;
-}> = ({ title, value, change, trend, icon, color }) => (
-  <Card elevation={2} sx={{ height: "100%" }}>
-    <CardContent>
-      <Box
-        display="flex"
-        justifyContent="space-between"
-        alignItems="flex-start"
-      >
-        <Box>
-          <Typography color="textSecondary" gutterBottom variant="body2">
-            {title}
-          </Typography>
-          <Typography variant="h4" component="h2" fontWeight="bold">
-            {value}
-          </Typography>
-          <Box display="flex" alignItems="center" mt={1}>
-            {trend === "up" ? (
-              <ChevronUp
-                width={16}
-                height={16}
-                color="#2e7d32"
-                style={{ marginRight: 4 }}
-              />
-            ) : (
-              <ChevronDown
-                width={16}
-                height={16}
-                color="#d32f2f"
-                style={{ marginRight: 4 }}
-              />
-            )}
-            <Typography
-              variant="body2"
-              color={trend === "up" ? "success.main" : "error.main"}
-              fontWeight="medium"
-            >
-              {change}
-            </Typography>
-            <Typography variant="body2" color="textSecondary" ml={1}>
-              vs last month
-            </Typography>
-          </Box>
-        </Box>
-        <Avatar sx={{ bgcolor: color, width: 56, height: 56 }}>{icon}</Avatar>
-      </Box>
-    </CardContent>
-  </Card>
-);
+  // Extract values from API responses with proper fallbacks
+  const totalRevenue = orderData?.data?.totalRevenue?.[0]?.total || 0;
+  const totalOrders = orderData?.data?.totalOrders?.[0]?.count || 0;
+  const totalUsers = userData?.data?.totalUsers?.[0]?.count || 0;
+  const totalProducts = productData?.data?.totalProducts?.[0]?.count || 0;
 
-const Overview: React.FC = () => {
+  // Order status counts
+  const deliveredOrders =
+    orderData?.data?.ordersByStatus?.find(
+      (status: OrderStatus) => status._id === "DELIVERED"
+    )?.count || 0;
+
+  // Product stats
+  const inStockProducts =
+    productData?.data?.productsByStatus?.find(
+      (status: OrderStatus) => status._id === "in-stock"
+    )?.count || 0;
+
+  const avgRating = productData?.data?.averageRatings?.[0]?.avgRating || 0;
+  const totalReviews =
+    productData?.data?.averageRatings?.[0]?.totalReviews || 0;
+
+  // User stats
+  const adminUsers =
+    userData?.data?.usersByRole?.find(
+      (role: OrderStatus) => role._id === "super-admin"
+    )?.count || 0;
+
+  const regularUsers =
+    userData?.data?.usersByRole?.find(
+      (role: OrderStatus) => role._id === "user"
+    )?.count || 0;
+
+  // Format revenue as currency
+  const formattedRevenue = new Intl.NumberFormat("en-US", {
+    style: "currency",
+    currency: "USD",
+    minimumFractionDigits: 0,
+  }).format(totalRevenue);
+
+  // Calculate order delivery rate
+  const deliveryRate =
+    totalOrders > 0 ? ((deliveredOrders / totalOrders) * 100).toFixed(1) : "0";
+
+  // Prepare sales data for the chart (last 7 days)
+  const salesData =
+    orderData?.data?.salesOverTime
+      ?.map((item: SalesOverTime) => ({
+        name: `${item._id.month}/${item._id.day}`,
+        sales: item.total,
+        orders: item.count,
+      }))
+      .slice(-7) || [];
+
+  // Prepare order status data for pie chart
+  const orderStatusData =
+    orderData?.data?.ordersByStatus?.map((status: OrderStatus) => {
+      const statusColors: Record<string, string> = {
+        DELIVERED: "#82ca9d",
+        PENDING: "#ffc658",
+        PROCESSING: "#0088FE",
+        CANCELLED: "#ff8042",
+        RETURNED: "#ffbb28",
+        DISPATCHED: "#8884d8",
+        READY_FOR_PICKUP: "#00C49F",
+      };
+
+      return {
+        name: status._id,
+        value: status.count,
+        color: statusColors[status._id] || "#8884d8",
+      };
+    }) || [];
+
+  // Prepare user growth data
+  const userGrowthData =
+    userData?.data?.userGrowth?.map((item: UserGrowth) => ({
+      name: `${item._id.month}/${item._id.year}`,
+      users: item.count,
+    })) || [];
+
+  // Prepare product status data
+  const productStatusData = [
+    { name: "In Stock", value: inStockProducts, color: "#82ca9d" },
+    {
+      name: "Out of Stock",
+      value: totalProducts - inStockProducts,
+      color: "#ff8042",
+    },
+  ];
+
+  // Prepare top products data
+  const topProductsData =
+    orderData?.data?.topProducts?.map((product: TopProduct, index: number) => ({
+      name: `Product ${index + 1}`,
+      sales: product.totalSold,
+    })) || [];
+
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
       {/* Header */}
       <Box mb={4}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>
+          Dashboard Overview
+        </Typography>
         <Typography variant="body1" color="textSecondary">
           Welcome back! Here's what's happening with your business today.
         </Typography>
@@ -118,44 +174,44 @@ const Overview: React.FC = () => {
 
       {/* Stats Cards */}
       <Grid container spacing={3} mb={4}>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <StatCard
             title="Total Revenue"
-            value="$45,231"
+            value={formattedRevenue}
             change="+12.5%"
             trend="up"
             icon={<DollarSign />}
-            color="primary.main"
+            color="#1976d2"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <StatCard
             title="Total Orders"
-            value="1,235"
+            value={totalOrders.toString()}
             change="+8.2%"
             trend="up"
             icon={<ShoppingCart />}
-            color="success.main"
+            color="#2e7d32"
           />
         </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
           <StatCard
-            title="Active Users"
-            value="2,847"
-            change="-2.4%"
-            trend="down"
-            icon={<Users />}
-            color="info.main"
-          />
-        </Grid>
-        <Grid size={{ xs: 12, sm: 6, md: 3 }}>
-          <StatCard
-            title="Conversion Rate"
-            value="3.2%"
-            change="+0.8%"
+            title="Total Users"
+            value={totalUsers.toString()}
+            change="+5.3%"
             trend="up"
-            icon={<Activity />}
-            color="warning.main"
+            icon={<Users />}
+            color="#0288d1"
+          />
+        </Grid>
+        <Grid size={{ xs: 12, sm: 6, lg: 3 }}>
+          <StatCard
+            title="Total Products"
+            value={totalProducts.toString()}
+            change="+2.1%"
+            trend="up"
+            icon={<Package />}
+            color="#ed6c02"
           />
         </Grid>
       </Grid>
@@ -163,8 +219,8 @@ const Overview: React.FC = () => {
       {/* Charts Section */}
       <Grid container spacing={3} mb={4}>
         {/* Sales Trend */}
-        <Grid size={{ xs: 12, lg: 8 }}>
-          <Paper elevation={2} sx={{ p: 3, height: 400 }}>
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={2} sx={{ p: 3, height: 400, borderRadius: 2 }}>
             <Box
               display="flex"
               justifyContent="space-between"
@@ -172,96 +228,40 @@ const Overview: React.FC = () => {
               mb={2}
             >
               <Typography variant="h6" fontWeight="bold">
-                Sales Overview
+                Sales & Orders Overview (Last 7 Days)
               </Typography>
               <IconButton>
                 <MoreHorizontal />
               </IconButton>
             </Box>
             <ResponsiveContainer width="100%" height="90%">
-              <AreaChart data={salesData}>
-                <defs>
-                  <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
-                    <stop offset="95%" stopColor="#8884d8" stopOpacity={0} />
-                  </linearGradient>
-                </defs>
-                <XAxis dataKey="name" />
-                <YAxis />
+              <BarChart data={salesData}>
                 <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis yAxisId="left" />
+                <YAxis yAxisId="right" orientation="right" />
                 <Tooltip />
-                <Area
-                  type="monotone"
-                  dataKey="value"
-                  stroke="#8884d8"
-                  fillOpacity={1}
-                  fill="url(#colorUv)"
+                <Legend />
+                <Bar
+                  yAxisId="left"
+                  dataKey="sales"
+                  name="Sales ($)"
+                  fill="#8884d8"
                 />
-              </AreaChart>
+                <Bar
+                  yAxisId="right"
+                  dataKey="orders"
+                  name="Orders"
+                  fill="#82ca9d"
+                />
+              </BarChart>
             </ResponsiveContainer>
           </Paper>
         </Grid>
 
-        {/* Traffic Sources */}
-        <Grid size={{ xs: 12, lg: 4 }}>
-          <Paper elevation={2} sx={{ p: 3, height: 400 }}>
-            <Typography variant="h6" fontWeight="bold" mb={2}>
-              Traffic Sources
-            </Typography>
-            <Box height={250}>
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={pieData}
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={100}
-                    paddingAngle={5}
-                    dataKey="value"
-                  >
-                    {pieData.map((entry, index) => (
-                      <Cell key={`cell-${index}`} fill={entry.color} />
-                    ))}
-                  </Pie>
-                  <Tooltip />
-                </PieChart>
-              </ResponsiveContainer>
-            </Box>
-            <Box mt={2}>
-              {pieData.map((item, index) => (
-                <Box
-                  key={index}
-                  display="flex"
-                  alignItems="center"
-                  justifyContent="space-between"
-                  mb={1}
-                >
-                  <Box display="flex" alignItems="center">
-                    <Box
-                      width={12}
-                      height={12}
-                      bgcolor={item.color}
-                      borderRadius="50%"
-                      mr={1}
-                    />
-                    <Typography variant="body2">{item.name}</Typography>
-                  </Box>
-                  <Typography variant="body2" fontWeight="bold">
-                    {item.value}%
-                  </Typography>
-                </Box>
-              ))}
-            </Box>
-          </Paper>
-        </Grid>
-      </Grid>
-
-      {/* Bottom Section */}
-      <Grid container spacing={3}>
-        {/* Recent Activities */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={2} sx={{ p: 3 }}>
+        {/* Order Status Distribution */}
+        <Grid size={{ xs: 12, lg: 6 }}>
+          <Paper elevation={2} sx={{ p: 3, height: 400, borderRadius: 2 }}>
             <Box
               display="flex"
               justifyContent="space-between"
@@ -269,99 +269,253 @@ const Overview: React.FC = () => {
               mb={2}
             >
               <Typography variant="h6" fontWeight="bold">
-                Recent Activities
+                Order Status Distribution
+              </Typography>
+              <IconButton>
+                <MoreHorizontal />
+              </IconButton>
+            </Box>
+            <Box height={250}>
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={orderStatusData}
+                    cx="50%"
+                    cy="50%"
+                    innerRadius={60}
+                    outerRadius={100}
+                    paddingAngle={2}
+                    dataKey="value"
+                    label={({ name, percent }) =>
+                      `${name}: ${(percent * 100).toFixed(0)}%`
+                    }
+                  >
+                    {orderStatusData.map(
+                      (entry: { color: string | undefined }, index: any) => (
+                        <Cell key={`cell-${index}`} fill={entry.color} />
+                      )
+                    )}
+                  </Pie>
+                  <Tooltip
+                    formatter={(value: number, name: string) => [
+                      `${value} orders`,
+                      name,
+                    ]}
+                  />
+                </PieChart>
+              </ResponsiveContainer>
+            </Box>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Middle Section */}
+      <Grid container spacing={3} mb={4}>
+        {/* User Growth */}
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+          <Paper elevation={2} sx={{ p: 3, height: 300, borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="bold" mb={2}>
+              User Growth
+            </Typography>
+            <ResponsiveContainer width="100%" height="80%">
+              <AreaChart data={userGrowthData}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Area
+                  type="monotone"
+                  dataKey="users"
+                  stroke="#8884d8"
+                  fill="#8884d8"
+                  fillOpacity={0.3}
+                />
+              </AreaChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+
+        {/* Product Status */}
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+          <Paper elevation={2} sx={{ p: 3, height: 300, borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="bold" mb={2}>
+              Product Status
+            </Typography>
+            <ResponsiveContainer width="100%" height="80%">
+              <PieChart>
+                <Pie
+                  data={productStatusData}
+                  cx="50%"
+                  cy="50%"
+                  innerRadius={60}
+                  outerRadius={80}
+                  paddingAngle={2}
+                  dataKey="value"
+                  label={({ name, percent }) =>
+                    `${name}: ${(percent * 100).toFixed(0)}%`
+                  }
+                >
+                  {productStatusData.map((entry, index) => (
+                    <Cell key={`cell-${index}`} fill={entry.color} />
+                  ))}
+                </Pie>
+                <Tooltip
+                  formatter={(value: number, name: string) => [
+                    `${value} products`,
+                    name,
+                  ]}
+                />
+              </PieChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+
+        {/* Top Selling Products */}
+        <Grid size={{ xs: 12, sm: 6, lg: 4 }}>
+          <Paper elevation={2} sx={{ p: 3, height: 300, borderRadius: 2 }}>
+            <Typography variant="h6" fontWeight="bold" mb={2}>
+              Top Selling Products
+            </Typography>
+            <ResponsiveContainer width="100%" height="80%">
+              <BarChart data={topProductsData} layout="vertical">
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis type="number" />
+                <YAxis type="category" dataKey="name" />
+                <Tooltip />
+                <Bar dataKey="sales" name="Units Sold" fill="#8884d8" />
+              </BarChart>
+            </ResponsiveContainer>
+          </Paper>
+        </Grid>
+      </Grid>
+
+      {/* Bottom Section */}
+      <Grid container spacing={3}>
+        {/* Recent Users */}
+        <Grid size={{ xs: 12, md: 6 }}>
+          <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
+            <Box
+              display="flex"
+              justifyContent="space-between"
+              alignItems="center"
+              mb={2}
+            >
+              <Typography variant="h6" fontWeight="bold">
+                Recent Users
               </Typography>
               <Chip label="Live" color="success" size="small" />
             </Box>
-            {/* <List>
-              {recentActivities.map((activity, index) => (
-                <Box key={activity.id}>
-                  <ListItem alignItems="flex-start" sx={{ px: 0 }}>
-                    <ListItemAvatar>
-                      <Avatar src={activity.avatar} />
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={
-                        <Typography variant="body2" fontWeight="medium">
-                          {activity.user}
-                        </Typography>
-                      }
-                      secondary={
-                        <Box>
-                          <Typography variant="body2" color="textSecondary">
-                            {activity.action}
+            <List>
+              {userData?.recentUsers
+                ?.slice(0, 5)
+                .map((user: RecentUser, index: number) => (
+                  <Box key={user._id}>
+                    <ListItem alignItems="flex-start" sx={{ px: 0 }}>
+                      <ListItemAvatar>
+                        <Avatar sx={{ bgcolor: "#1976d2" }}>
+                          {user.name?.firstName?.[0]}
+                          {user.name?.lastName?.[0]}
+                        </Avatar>
+                      </ListItemAvatar>
+                      <ListItemText
+                        primary={
+                          <Typography variant="body2" fontWeight="medium">
+                            {user.name?.firstName} {user.name?.lastName}
                           </Typography>
-                          <Typography variant="caption" color="textSecondary">
-                            {activity.time}
-                          </Typography>
-                        </Box>
-                      }
-                    />
-                  </ListItem>
-                  {index < recentActivities.length - 1 && <Divider />}
-                </Box>
-              ))}
-            </List> */}
+                        }
+                        secondary={
+                          <Box>
+                            <Typography variant="body2" color="textSecondary">
+                              {user.email}
+                            </Typography>
+                            <Typography variant="caption" color="textSecondary">
+                              Joined:{" "}
+                              {new Date(user.createdAt).toLocaleDateString()}
+                            </Typography>
+                          </Box>
+                        }
+                      />
+                      <Chip
+                        label={user.role}
+                        size="small"
+                        color={
+                          user.role === "super-admin" ? "error" : "default"
+                        }
+                      />
+                    </ListItem>
+                    {index < (userData?.recentUsers?.length || 0) - 1 && (
+                      <Divider />
+                    )}
+                  </Box>
+                ))}
+            </List>
           </Paper>
         </Grid>
 
         {/* Performance Metrics */}
-        <Grid size={{ xs: 12, md: 6 }}>
-          <Paper elevation={2} sx={{ p: 3 }}>
+        <Grid size={{ xs: 12, sm: 6 }}>
+          <Paper elevation={2} sx={{ p: 3, borderRadius: 2 }}>
             <Typography variant="h6" fontWeight="bold" mb={3}>
               Performance Metrics
             </Typography>
             <Box mb={3}>
               <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="body2">Server Response Time</Typography>
+                <Typography variant="body2">Order Delivery Rate</Typography>
                 <Typography variant="body2" fontWeight="bold">
-                  85%
+                  {deliveryRate}%
                 </Typography>
               </Box>
               <LinearProgress
                 variant="determinate"
-                value={85}
+                value={parseFloat(deliveryRate)}
                 sx={{ height: 8, borderRadius: 4 }}
               />
             </Box>
             <Box mb={3}>
               <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="body2">Database Performance</Typography>
-                <Typography variant="body2" fontWeight="bold">
-                  72%
-                </Typography>
+                <Typography variant="body2">Average Product Rating</Typography>
+                <Box display="flex" alignItems="center">
+                  <Star size={16} color="#ffc107" fill="#ffc107" />
+                  <Typography variant="body2" fontWeight="bold" ml={0.5}>
+                    {avgRating.toFixed(1)}/5 ({totalReviews} reviews)
+                  </Typography>
+                </Box>
               </Box>
               <LinearProgress
                 variant="determinate"
-                value={72}
+                value={avgRating * 20}
                 sx={{ height: 8, borderRadius: 4 }}
                 color="warning"
               />
             </Box>
             <Box mb={3}>
               <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="body2">User Satisfaction</Typography>
+                <Typography variant="body2">User Distribution</Typography>
                 <Typography variant="body2" fontWeight="bold">
-                  94%
+                  {regularUsers} users, {adminUsers} admins
                 </Typography>
               </Box>
               <LinearProgress
                 variant="determinate"
-                value={94}
+                value={totalUsers > 0 ? (adminUsers / totalUsers) * 100 : 0}
                 sx={{ height: 8, borderRadius: 4 }}
-                color="success"
+                color="info"
               />
             </Box>
             <Box>
               <Box display="flex" justifyContent="space-between" mb={1}>
-                <Typography variant="body2">System Uptime</Typography>
+                <Typography variant="body2">Inventory Health</Typography>
                 <Typography variant="body2" fontWeight="bold">
-                  99%
+                  {inStockProducts}/{totalProducts} in stock
                 </Typography>
               </Box>
               <LinearProgress
                 variant="determinate"
-                value={99}
+                value={
+                  totalProducts > 0
+                    ? (inStockProducts / totalProducts) * 100
+                    : 0
+                }
                 sx={{ height: 8, borderRadius: 4 }}
                 color="success"
               />
@@ -373,4 +527,4 @@ const Overview: React.FC = () => {
   );
 };
 
-export default Overview;
+export default DashboardOverview;

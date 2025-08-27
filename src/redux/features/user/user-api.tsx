@@ -23,6 +23,23 @@ const userApi = baseApi.injectEndpoints({
       }),
       providesTags: ["single-user"],
     }),
+
+    singleUser: builder.query({
+      query: (id: string) => ({
+        url: `/user/user/${id}`,
+        method: "GET",
+      }),
+      providesTags: ["single-user"],
+    }),
+
+    userStats: builder.query({
+      query: () => ({
+        url: `/user/user-stats`,
+        method: "GET",
+      }),
+      providesTags: ["user-stats"],
+    }),
+
     //update user
     updateUser: builder.mutation({
       query: ({ id, ...data }) => ({
@@ -37,5 +54,7 @@ const userApi = baseApi.injectEndpoints({
 export const {
   useAllUsersQuery,
   useSingleUserBySlugQuery,
+  useSingleUserQuery,
+  useUserStatsQuery,
   useUpdateUserMutation,
 } = userApi;

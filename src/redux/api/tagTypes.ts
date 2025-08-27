@@ -18,4 +18,7 @@ export const tagTypes = [
   "single-content",
   "all-variant",
   "single-variant",
+  "product-stats",
+  "order-stats",
+  "user-stats",
 ];

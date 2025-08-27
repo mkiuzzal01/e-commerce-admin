@@ -16,7 +16,7 @@ import { useAppDispatch, useAppSelector } from "../../redux/hooks";
 import { logout, selectCurrentUser } from "../../redux/features/auth/authSlice";
 import { useToast } from "../../components/utils/tost-alert/ToastProvider";
 import Loader from "../../shared/Loader";
-import { useSingleUserBySlugQuery } from "../../redux/features/user/user-api";
+import { useSingleUserQuery } from "../../redux/features/user/user-api";
 
 const User = () => {
   const dispatch = useAppDispatch();
@@ -24,8 +24,8 @@ const User = () => {
   const { showToast } = useToast();
 
   const currentUser = useAppSelector(selectCurrentUser);
-  const { data: userInfo, isLoading } = useSingleUserBySlugQuery(
-    currentUser?.slug ?? ""
+  const { data: userInfo, isLoading } = useSingleUserQuery(
+    currentUser?.id ?? ""
   );
 
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);

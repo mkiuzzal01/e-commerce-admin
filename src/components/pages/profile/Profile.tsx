@@ -1,134 +1,310 @@
-// export default function Profile() {
-//   return (
-//     <div>Profile
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import Loader from "../../../shared/Loader";
+import {
+  Box,
+  Paper,
+  Typography,
+  Grid,
+  Card,
+  CardContent,
+  Chip,
+  Alert,
+  Container,
+  Avatar,
+  Stack,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+  Badge,
+} from "@mui/material";
+import {
+  Person,
+  Email,
+  Phone,
+  Badge as BadgeIcon,
+  Male,
+  Female,
+  Wc,
+  AdminPanelSettings,
+  PersonOutline,
+} from "@mui/icons-material";
+import { useSingleUserQuery } from "../../../redux/features/user/user-api";
+import { useAppSelector } from "../../../redux/hooks";
+import { selectCurrentUser } from "../../../redux/features/auth/authSlice";
 
-//       <Grid size={{ xs: 12, md: 4 }}>
-//               <TextInput name="name.firstName" label="First Name" required />
-//             </Grid>
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <TextInput name="name.middleName" label="Middle Name" />
-//             </Grid>
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <TextInput name="name.lastName" label="Last Name" required />
-//             </Grid>
+export default function ViewUser() {
+  const currentUser = useAppSelector(selectCurrentUser);
+  const { data, isLoading } = useSingleUserQuery(currentUser?.id ?? "");
 
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <TextInput name="email" label="Email" type="email" required />
-//             </Grid>
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <TextInput name="phone" label="Phone" type="tel" required />
-//             </Grid>
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <TextInput name="nid" label="NID" required />
-//             </Grid>
+  if (isLoading) return <Loader />;
 
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <DateInput name="dateOfBirth" label="Date of Birth" required />
-//             </Grid>
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <DateInput name="dateOfJoining" label="Joining Date" required />
-//             </Grid>
-//             <Grid size={{ xs: 12, md: 4 }}>
-//               <SelectInputField
-//                 name="gender"
-//                 label="Gender"
-//                 options={["male", "female", "other"]}
-//                 requiredMessage="Gender is required"
-//               />
-//             </Grid>
+  if (!data || !data.success) {
+    return (
+      <Container maxWidth="sm" sx={{ mt: 8 }}>
+        <Alert severity="warning">
+          <Typography variant="h6" gutterBottom>
+            User Not Found
+          </Typography>
+          <Typography>The requested user could not be found.</Typography>
+        </Alert>
+      </Container>
+    );
+  }
 
-//             {/* Address Section */}
-//             <Grid size={{ xs: 12, md: 12 }}>
-//               <SectionHeader
-//                 icon={<InfoOutlinedIcon />}
-//                 title="Address Information"
-//                 subtitle="Enter present and permanent address"
-//               />
-//             </Grid>
+  const user = data?.data;
 
-//             <Grid size={{ xs: 12, md: 6 }}>
-//               <TextInput
-//                 name="address.presentAddress"
-//                 label="Present Address"
-//                 required
-//                 multiline
-//                 row={2}
-//               />
-//             </Grid>
-//             <Grid size={{ xs: 12, md: 6 }}>
-//               <TextInput
-//                 name="address.permanentAddress"
-//                 label="Permanent Address"
-//                 required
-//                 multiline
-//                 row={2}
-//               />
-//             </Grid>
+  const getStatusColor = (status: string) => {
+    switch (status?.toLowerCase()) {
+      case "active":
+        return "success";
+      case "in-progress":
+        return "warning";
+      case "inactive":
+        return "error";
+      case "pending":
+        return "info";
+      default:
+        return "default";
+    }
+  };
 
-//                   {/* Password Section - Only for new users */}
-//                         {!currentData && (
-//                           <>
-//                             <Grid size={{ xs: 12, md: 12 }}>
-//                               <SectionHeader
-//                                 icon={<MdSecurity />}
-//                                 title="Security"
-//                                 subtitle="Create new password"
-//                               />
-//                             </Grid>
+  const getRoleColor = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case "admin":
+        return "error";
+      case "moderator":
+        return "warning";
+      case "user":
+        return "primary";
+      default:
+        return "default";
+    }
+  };
 
-//                             <Grid size={{ xs: 12, md: 12 }}>
-//                               <TextInput
-//                                 name="password"
-//                                 label="Password"
-//                                 type="password"
-//                                 defaultValue="12345"
-//                                 placeholder="Enter password"
-//                                 required
-//                               />
-//                             </Grid>
-//                           </>
-//                         )}
+  const getRoleIcon = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case "admin":
+        return <AdminPanelSettings />;
+      case "moderator":
+        return <BadgeIcon />;
+      case "user":
+        return <PersonOutline />;
+      default:
+        return <Person />;
+    }
+  };
 
-//             {/* Bank Information - Only for Sellers */}
-//               <>
-//                 <Grid size={{ xs: 12, md: 12 }}>
-//                   <SectionHeader
-//                     icon={<MdAccountBalance />}
-//                     title="Bank Information"
-//                     subtitle="Only for sellers"
-//                   />
-//                 </Grid>
+  const getGenderIcon = (gender: string) => {
+    switch (gender?.toLowerCase()) {
+      case "male":
+        return <Male color="primary" />;
+      case "female":
+        return <Female color="secondary" />;
+      default:
+        return <Wc color="action" />;
+    }
+  };
 
-//                 <Grid size={{ xs: 12, md: 4 }}>
-//                   <SelectInputField
-//                     name="bankAccountInfo.paymentMethod"
-//                     label="Payment Method"
-//                     options={["bankTransfer", "mobileBanking"]}
-//                     requiredMessage="Payment method is required"
-//                   />
-//                 </Grid>
-//                 <Grid size={{ xs: 12, md: 4 }}>
-//                   <SelectInputField
-//                     name="bankAccountInfo.bankName"
-//                     label="Bank Name"
-//                     options={["bKash", "Nagad", "dhakaBank"]}
-//                     requiredMessage="Bank name is required"
-//                   />
-//                 </Grid>
-//                 <Grid size={{ xs: 12, md: 4 }}>
-//                   <TextInput
-//                     name="bankAccountInfo.accountNumber"
-//                     label="Account Number"
-//                     required
-//                   />
-//                 </Grid>
-//               </>
+  const getInitials = (name: any) => {
+    const first = name.firstName?.charAt(0) || "";
+    const middle = name.middleName ? name.middleName.charAt(0) : "";
+    const last = name.lastName?.charAt(0) || "";
+    return `${first}${middle}${last}`.toUpperCase();
+  };
 
-//               </Grid>
-//     </div>
-//   )
-// }
+  const getAvatarColor = (role: string) => {
+    switch (role?.toLowerCase()) {
+      case "admin":
+        return "error.main";
+      case "moderator":
+        return "warning.main";
+      case "user":
+        return "primary.main";
+      default:
+        return "grey.500";
+    }
+  };
 
-export default function Profile() {
-  return <div>Profile</div>;
+  return (
+    <Container maxWidth="xl" sx={{ py: 4 }}>
+      {/* Header */}
+      <Paper elevation={2} sx={{ mb: 3 }}>
+        <Box sx={{ p: 3 }}>
+          <Grid container spacing={3} alignItems="center">
+            <Grid>
+              <Badge
+                overlap="circular"
+                anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
+                badgeContent={
+                  <Avatar
+                    sx={{
+                      width: 22,
+                      height: 22,
+                      bgcolor: getAvatarColor(user?.role),
+                      border: "2px solid white",
+                    }}
+                  >
+                    {getRoleIcon(user?.role)}
+                  </Avatar>
+                }
+              >
+                <Avatar
+                  sx={{
+                    width: 80,
+                    height: 80,
+                    bgcolor: getAvatarColor(user?.role),
+                    fontSize: "2rem",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {getInitials(user?.name)}
+                </Avatar>
+              </Badge>
+            </Grid>
+
+            <Grid size={{ xs: 12 }}>
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: 2,
+                  flexWrap: "wrap",
+                }}
+              >
+                <Box>
+                  <Typography variant="h4" component="h1" gutterBottom>
+                    {user?.name?.firstName}{" "}
+                    {user?.name?.middleName && user?.name?.middleName + " "}
+                    {user?.name?.lastName}
+                  </Typography>
+
+                  <Stack direction="row" spacing={1} flexWrap="wrap" gap={1}>
+                    <Chip
+                      label={
+                        user?.status?.charAt(0)?.toUpperCase() +
+                        user?.status?.slice(1)
+                      }
+                      color={getStatusColor(user?.status)}
+                      variant="filled"
+                      size="small"
+                    />
+                    <Chip
+                      icon={getRoleIcon(user?.role)}
+                      label={
+                        user?.role?.charAt(0)?.toUpperCase() +
+                        user?.role?.slice(1)
+                      }
+                      color={getRoleColor(user?.role)}
+                      variant="outlined"
+                      size="small"
+                    />
+                    <Chip
+                      icon={getGenderIcon(user?.gender)}
+                      label={
+                        user?.gender?.charAt(0)?.toUpperCase() +
+                        user?.gender?.slice(1)
+                      }
+                      variant="outlined"
+                      size="small"
+                    />
+                  </Stack>
+                </Box>
+              </Box>
+            </Grid>
+          </Grid>
+        </Box>
+      </Paper>
+
+      <Grid container spacing={3}>
+        {/* Left Column */}
+        <Grid size={{ xs: 12, md: 8 }}>
+          {/* Personal Information */}
+          <Paper elevation={2} sx={{ mb: 3 }}>
+            <CardContent>
+              <Box
+                sx={{ display: "flex", alignItems: "center", gap: 1, mb: 3 }}
+              >
+                <Person color="primary" />
+                <Typography variant="h6" component="h2">
+                  Personal Information
+                </Typography>
+              </Box>
+
+              <Grid container spacing={3}>
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <List dense>
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 40 }}>
+                        <Person fontSize="small" color="action" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Full Name"
+                        secondary={`${user?.name?.firstName} ${user?.name?.middleName && user?.name?.middleName + " "}${user?.name?.lastName}`}
+                      />
+                    </ListItem>
+
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 40 }}>
+                        <Email fontSize="small" color="action" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Email Address"
+                        secondary={user?.email}
+                      />
+                    </ListItem>
+
+                    <ListItem disableGutters>
+                      <ListItemIcon sx={{ minWidth: 40 }}>
+                        <Phone fontSize="small" color="action" />
+                      </ListItemIcon>
+                      <ListItemText
+                        primary="Phone Number"
+                        secondary={user?.phone}
+                      />
+                    </ListItem>
+                  </List>
+                </Grid>
+
+                <Grid size={{ xs: 12, md: 6 }}>
+                  <CardContent>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="medium"
+                          gutterBottom
+                          color="primary"
+                        >
+                          Permanent Address
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {user?.address?.permanentAddress}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                    <Card variant="outlined">
+                      <CardContent>
+                        <Typography
+                          variant="subtitle1"
+                          fontWeight="medium"
+                          gutterBottom
+                          color="primary"
+                        >
+                          Present Address
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {user?.address?.presentAddress}
+                        </Typography>
+                      </CardContent>
+                    </Card>
+                  </CardContent>
+                </Grid>
+              </Grid>
+            </CardContent>
+          </Paper>
+        </Grid>
+      </Grid>
+    </Container>
+  );
 }

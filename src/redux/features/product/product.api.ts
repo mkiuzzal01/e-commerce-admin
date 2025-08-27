@@ -23,6 +23,14 @@ const ProductApi = baseApi.injectEndpoints({
       providesTags: ["single-product"],
     }),
 
+    productByStats: builder.query({
+      query: () => ({
+        url: `/product/product-stats`,
+        method: "GET",
+      }),
+      providesTags: ["product-stats"],
+    }),
+
     // Get single product by ID
     singleProductById: builder.query({
       query: (id: string) => ({
@@ -63,6 +71,7 @@ export const {
   useAllProductsQuery,
   useSingleProductBySlugQuery,
   useSingleProductByIdQuery,
+  useProductByStatsQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
   useDeleteProductMutation,
