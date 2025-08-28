@@ -12,7 +12,6 @@ import {
   Category as CategoryIcon,
   InfoOutlined as InfoOutlinedIcon,
   Inventory as InventoryIcon,
-  AttachMoney as AttachMoneyIcon,
   Style as StyleIcon,
   Description as DescriptionIcon,
   Save as SaveIcon,
@@ -43,6 +42,7 @@ import { CategorySelector } from "./components/CategorySelector";
 // import { zodResolver } from "@hookform/resolvers/zod";
 // import { baseProductSchema } from "./components/productValidationSchema";
 import { useToast } from "../tost-alert/ToastProvider";
+import { HandCoins } from "lucide-react";
 
 const statusOptions = ["in-stock", "out-stock", "low-stock", "pre-order"];
 const productPlace = ["not-now", "trending", "flash-sale", "new-arrival"];
@@ -373,7 +373,7 @@ const ProductForm = ({ initialData }: Pros) => {
 
             {/* Pricing & Inventory Section */}
             <SectionHeader
-              icon={<AttachMoneyIcon />}
+              icon={<HandCoins />}
               title="Pricing & discount"
               subtitle="Manage product discount and pricing"
             />
